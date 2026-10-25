@@ -1,0 +1,826 @@
+# MASTER BUILD PROMPT — INKLOOM AI
+## Build a complete, functional, AI-powered brand governance platform
+
+Act as a senior full-stack engineer, AI engineer, product designer, security engineer, and QA tester. Build a complete, polished, genuinely functional web application named **INKLOOM AI** from scratch in Google AI Studio Build mode.
+
+Do not simply create a landing page, static dashboard, UI mockup, or collection of nonfunctional buttons. Build the actual working application, including its frontend, backend or server-side logic where supported, AI integration, data persistence, document processing, audit engine, validation, error handling, and end-to-end user workflows.
+
+Do not reproduce the implementation problems of a previous prototype. Follow the requirements below as the source of truth.
+
+---
+
+# 1. Product vision
+
+**Product name:** INKLOOM AI
+
+**Tagline:** Create confidently. Verify intelligently. Publish consistently.
+
+**Product category:** AI-assisted brand governance and content quality assurance.
+
+**Purpose:** Help marketing teams verify that content follows their organization's approved brand guidelines, terminology, visual identity, factual requirements, and risk policies before publication.
+
+The platform should allow a user to:
+
+1. Create or select a brand.
+2. Upload and manage its approved brand guidelines.
+3. Create a marketing campaign.
+4. Write, paste, upload, or import draft content.
+5. Run an AI-assisted compliance audit.
+6. See genuine violations with exact evidence and applicable rules.
+7. Review suggested corrections.
+8. Edit or accept corrections individually.
+9. Compare the original and revised content.
+10. Run the audit again.
+11. Request human review when necessary.
+12. Approve, reject, or block release based on actual findings.
+13. Export an audit report with traceable evidence.
+
+Every step must be connected to real application logic.
+
+# 2. Technology and architecture
+
+Use the most reliable supported stack available in the current Google AI Studio environment.
+
+Preferred architecture:
+- React and TypeScript for the frontend.
+- A clean, reusable component system.
+- A supported server-side runtime for sensitive operations.
+- Gemini API for semantic analysis and evidence-based reasoning.
+- A persistent database supported by the environment, with a clearly defined data model.
+- Document-processing utilities for supported PDF, TXT, DOCX, and other feasible file formats.
+- Structured JSON schemas and runtime validation for AI outputs.
+- Automated tests for the audit engine and major user workflows.
+
+Before implementing, inspect the available environment and choose compatible dependencies. Do not invent APIs, unavailable services, or unsupported integrations.
+
+Keep the application modular. Separate:
+- User interface
+- Brand and document management
+- Document extraction
+- Guideline interpretation
+- Deterministic rule engine
+- AI audit engine
+- Evidence validation
+- Compliance scoring
+- Correction workflow
+- Approval workflow
+- Database and persistence
+- Testing and error handling
+
+Do not put all logic in one giant component.
+
+Keep API keys and other secrets on the server side whenever supported. Never expose a private API key in client-side code or source control.
+
+If a service requires configuration, provide clear setup instructions and an honest configuration status. Never simulate a successful connection.
+
+# 3. Design and user experience
+
+Build a premium, modern SaaS application suitable for a professional product demo and hackathon presentation.
+
+Design direction:
+- Clean editorial layout.
+- Warm white or light neutral backgrounds.
+- Deep charcoal text.
+- Restrained ink-blue or violet accents.
+- Subtle borders, rounded cards, and clear spacing.
+- Strong typography and readable content.
+- Responsive desktop, tablet, and mobile layouts.
+- Accessible contrast and keyboard navigation.
+- Thoughtful transitions and loading states.
+
+Avoid:
+- Excessive gradients and glowing effects.
+- Overloaded enterprise dashboards.
+- Fake charts and meaningless statistics.
+- Decorative components that distract from the workflow.
+- Excessive technical jargon.
+- Placeholder buttons that do nothing.
+
+Make the interface understandable to a first-time user.
+
+Use plain language such as:
+- “What needs fixing?”
+- “Why was this flagged?”
+- “Which guideline applies?”
+- “Suggested correction”
+- “Needs human review”
+- “Ready for approval”
+
+Provide contextual tooltips where necessary.
+
+# 4. Application navigation
+
+Create a functional sidebar or navigation system containing:
+
+1. Overview
+2. Brands
+3. Brand Guidelines
+4. Campaigns
+5. Content Editor
+6. Audit Results
+7. Review & Approvals
+8. Audit History
+9. Settings
+
+Each page must display meaningful data from the application state and persisted records.
+
+Navigation must work. Do not create dead links or empty pages disguised as finished features.
+
+# 5. First-time user experience
+
+Create a guided onboarding workflow.
+
+Step 1: Welcome screen explaining what Inkloom AI does.
+
+Step 2: Create a brand with:
+- Brand name
+- Industry
+- Description
+- Primary language
+- Optional website
+- Optional logo
+
+Step 3: Upload the brand's approved guidelines or create a small guideline set manually.
+
+Step 4: Review the extracted rules before activating them.
+
+Step 5: Create a first campaign and enter marketing content.
+
+Step 6: Run the first audit.
+
+Clearly explain that the quality of the audit depends on the accuracy and completeness of the approved guidelines.
+
+A user should be able to complete a first audit without navigating through unrelated pages.
+
+# 6. Brand management and strict data isolation
+
+Support multiple brands, each with its own guidelines, assets, terminology, campaigns, and audit history.
+
+Every campaign and audit must belong to one explicitly selected brand.
+
+Implement strict brand isolation:
+- Never apply one brand's rules to another brand.
+- Never silently combine guidelines from different brands.
+- Never use an unrelated default policy to fill missing rules.
+- Never include old audit findings in a new audit.
+- Never reuse a previous campaign's text as the current draft.
+- Never reuse stale AI responses after the draft or guidelines change.
+
+Every audit must record:
+- Brand ID
+- Campaign ID
+- Draft version or content hash
+- Active guideline IDs and versions
+- Audit timestamp
+- Audit engine version
+- Applicable rule IDs
+- Findings
+- Score calculation
+- Review and approval status
+
+If the selected brand has no active guidelines, explain that the user must add or activate guidelines before a meaningful brand-compliance audit can run.
+
+Do not silently substitute generic guidelines.
+
+# 7. Brand guideline management
+
+Allow users to upload supported documents and manually create, edit, activate, deactivate, and version guidelines.
+
+For each uploaded document:
+1. Validate file type and size.
+2. Extract readable text.
+3. Report extraction failures.
+4. Preserve the original file reference when supported.
+5. Show the extracted text to the user.
+6. Extract candidate rules.
+7. Ask the user to review and approve the extracted rules.
+8. Activate only approved rules.
+
+Each rule must have structured fields:
+
+- Rule ID
+- Brand ID
+- Source document ID
+- Source document version
+- Exact source excerpt
+- Page or section reference, when available
+- Rule category
+- Rule description
+- Rule type
+- Severity
+- Scope
+- Detection method
+- Optional approved correction or replacement
+- Active status
+- Human approval status
+
+Supported rule categories:
+- Prohibited claims
+- Unsupported factual claims
+- Required disclaimers
+- Restricted terminology
+- Preferred terminology
+- Tone of voice
+- Brand spelling and naming
+- Visual identity
+- Logo usage
+- Color rules
+- Typography rules
+- Formatting
+- Regulatory or legal requirements
+- Other explicitly configured rules
+
+Important distinction:
+
+A heading such as “Avoid Misleading Claims” is not a rule banning the ordinary word “claims.”
+
+The system must interpret the meaning of the complete guideline, not turn every noun, heading, or keyword into a prohibited phrase.
+
+If a rule's meaning is ambiguous, mark it as “Needs clarification” and ask the user to resolve it.
+
+Do not invent a rule merely because an AI model thinks it is sensible.
+
+# 8. Campaign and content editor
+
+Create a functional content workspace.
+
+Users must be able to:
+- Create a campaign.
+- Select the associated brand.
+- Give the campaign a name.
+- Choose a content type.
+- Enter a target audience.
+- Select a language.
+- Paste or write content.
+- Upload supported text documents.
+- Save drafts.
+- Edit and save revisions.
+- Run an audit.
+- View previous versions.
+
+Support relevant content types such as:
+- Social media posts
+- Advertisements
+- Product descriptions
+- Website copy
+- Email campaigns
+- Landing pages
+- Blog content
+- Marketing scripts
+
+The editor must audit the exact current content submitted by the user.
+
+If the draft changes after an audit, clearly mark the results as outdated and require a new audit before approval.
+
+Never claim to have audited text that was not actually submitted to the audit engine.
+
+# 9. The core audit engine
+
+This is the most important feature. Prioritize correctness over visual polish.
+
+Use a hybrid audit architecture consisting of:
+
+A. Deterministic checks for explicit, machine-checkable rules.
+
+B. Gemini-powered semantic analysis for contextual, meaning-based rules.
+
+C. Evidence validation to ensure every reported finding is traceable to a real source.
+
+D. A scoring engine that operates on validated findings only.
+
+## A. Deterministic checks
+
+Use deterministic checks when the rule supports reliable matching, such as:
+- Exact prohibited phrases.
+- Required terms.
+- Approved brand names.
+- Incorrect spelling of configured brand names.
+- Required disclaimer text.
+- Explicit formatting constraints.
+
+Use appropriate phrase boundaries, normalization, and context-aware matching.
+
+Do not flag a short phrase simply because it occurs inside a longer unrelated word.
+
+Do not treat every occurrence of a term as a violation if the rule applies only to a specific context.
+
+Do not duplicate the same finding when deterministic and AI checks detect the same underlying problem.
+
+## B. Semantic AI analysis
+
+Use Gemini to evaluate meaning and context, including:
+- Exaggerated or unsupported promises.
+- Claims that conflict with approved rules.
+- Inappropriate tone.
+- Misleading implications.
+- Missing contextual qualifications.
+- Inconsistent messaging.
+- Potentially risky marketing statements.
+
+Send Gemini only the selected brand's active, approved rules and the current campaign draft needed for that audit.
+
+Require structured JSON output validated against a defined schema.
+
+For every proposed finding, require:
+- Exact quoted text from the draft.
+- Finding category.
+- Severity.
+- Applicable rule ID.
+- Source document ID.
+- Explanation in plain language.
+- Evidence from the approved guideline.
+- Suggested correction, if authorized.
+- Confidence or uncertainty status.
+
+The AI must not invent rule IDs, source documents, quotations, policy sections, or evidence.
+
+## C. Evidence validation
+
+After the AI returns findings, validate them against the actual submitted content and stored guidelines.
+
+Reject or quarantine a finding if:
+- The quoted text does not occur in the submitted draft.
+- The cited rule does not exist.
+- The cited rule belongs to another brand.
+- The cited source is inactive or unapproved.
+- The evidence does not support the claimed violation.
+- The finding is a duplicate of another finding.
+- The suggested correction introduces unsupported claims.
+
+If a finding cannot be validated, do not silently present it as a confirmed violation.
+
+Display an appropriate status such as “Needs human review” or “Insufficient evidence.”
+
+Never transform model uncertainty into a definitive accusation.
+
+## D. No unrelated policies
+
+The app must never silently import software-development policies, generic SLAs, cybersecurity policies, or other unrelated rules into a sunscreen marketing audit.
+
+Only explicitly configured and approved rules belonging to the selected brand and applicable scope may govern the audit.
+
+If a separate regulatory policy is deliberately added, store it as an explicitly selected source and display its provenance.
+
+Never fabricate policy names, section numbers, or legal citations.
+
+# 10. Visual brand compliance
+
+Where image input and image analysis are supported, let users upload:
+- Campaign artwork
+- Social media creatives
+- Advertisements
+- Product packaging
+- Logo placements
+
+Check visual assets against the selected brand's approved visual rules.
+
+Examples:
+- Incorrect logo.
+- Missing logo, when required.
+- Incorrect configured brand colors.
+- Prohibited background colors.
+- Incorrect aspect ratio, when specified.
+- Missing required visual disclaimer.
+- Readable text that conflicts with the approved terminology.
+
+Use actual image analysis or deterministic image checks as appropriate.
+
+Do not claim that an image was checked if the analysis failed.
+
+If a rule cannot be assessed reliably from an image, display “Unable to verify automatically” and explain why.
+
+Visual findings must cite the relevant rule and, where possible, identify the affected image or region.
+
+# 11. Audit results interface
+
+After a real audit finishes, display a clear summary.
+
+Include:
+- Overall compliance score.
+- Release recommendation.
+- Critical findings.
+- Other violations.
+- Items needing evidence.
+- Passed checks.
+- Findings requiring human review.
+- Active rules evaluated.
+- Audit timestamp.
+- Draft version audited.
+
+For every finding, display:
+1. The exact problematic sentence or text.
+2. A highlighted excerpt in context.
+3. Why it was flagged.
+4. The specific rule that applies.
+5. The source document and section, when available.
+6. The evidence supporting the finding.
+7. Severity.
+8. Confidence or review status.
+9. An authorized suggested correction, if available.
+10. Actions to edit, accept, dismiss with a reason, or request review.
+
+Clicking a finding should highlight its corresponding text in the editor when technically possible.
+
+Show loading progress during audits and clear errors if a request fails.
+
+Never show fabricated audit results, randomly changing percentages, or example findings as if they were real.
+
+# 12. Compliance score calculation
+
+Create a transparent and reproducible scoring algorithm.
+
+Do not ask Gemini to invent the final compliance percentage.
+
+Calculate the score in application code from validated findings and completed checks.
+
+Use this initial model:
+
+- Critical finding weight: 10
+- Major finding weight: 5
+- Minor finding weight: 2
+
+Each applicable rule receives an outcome:
+- Pass
+- Violation
+- Needs review
+- Not applicable
+
+Calculate:
+
+Potential penalty = sum of the weights of confirmed violations.
+
+Maximum penalty = sum of the weights of all applicable, assessable rules.
+
+Compliance score = 100 × (1 − potential penalty / maximum penalty).
+
+Round to the nearest whole percentage and clamp the result between 0 and 100.
+
+If no applicable rules can be assessed, display “Not enough information to calculate a score” rather than 100%.
+
+If assessment is incomplete or important checks failed, label the score “Provisional” and show what remains unchecked.
+
+Explain that the score is a rule-based indicator, not a guarantee of legal compliance or factual accuracy.
+
+Do not count duplicate findings twice. Multiple findings tied to the same rule and overlapping text should be deduplicated appropriately.
+
+Track unique rule outcomes separately from individual text occurrences.
+
+The score must remain reproducible for the same draft, rules, and validated findings.
+
+Keep the scoring algorithm modular so that severity weights can be configured later.
+
+# 13. Release decision and approval workflow
+
+Implement a separate release-decision engine.
+
+Possible statuses:
+- Draft
+- Auditing
+- Audit failed
+- Changes required
+- Needs human review
+- Ready for approval
+- Approved
+- Rejected
+- Released
+
+Rules:
+- Any unresolved critical violation blocks release.
+- Unresolved major violations follow the configured approval policy.
+- Evidence gaps that could affect a critical decision require human review.
+- An incomplete or failed audit cannot automatically approve content.
+- A high score alone never guarantees approval.
+- Only authorized users may approve or release content.
+- A user cannot approve a stale audit after changing the draft.
+
+Provide separate actions for:
+- Save draft
+- Run audit
+- Fix issues
+- Request human review
+- Submit for approval
+- Approve
+- Reject
+- Release, when permitted
+
+Record who performed each action and when, where user authentication is implemented.
+
+Do not make “Formal Sign-Off” or “Approve” a cosmetic button that changes the status without checking release conditions.
+
+# 14. Correction workflow
+
+Corrections must be grounded in the actual approved rules.
+
+For each finding:
+- Show the original text.
+- Show the proposed replacement.
+- Explain why the replacement is appropriate.
+- Cite the rule supporting the change.
+- Allow the user to edit the replacement.
+- Allow the user to accept or reject it individually.
+
+Never automatically replace a sentence with an unrelated generic phrase.
+
+Never invent a product benefit, guarantee, statistic, certification, disclaimer, or factual claim.
+
+If the guideline does not provide enough information for a safe correction, say so and request human input.
+
+Support:
+- Accept correction.
+- Edit correction.
+- Reject correction.
+- Undo accepted correction.
+- Accept all eligible corrections, with a confirmation step.
+
+“Accept all” must never apply unapproved or unsupported corrections.
+
+After a correction is applied, update the draft, mark the previous audit as stale, and offer to run a fresh audit.
+
+# 15. Original versus revised content
+
+Build a functional comparison view.
+
+Display:
+- Original draft.
+- Revised draft.
+- Added text.
+- Removed text.
+- Changed text.
+- Findings resolved.
+- Findings still open.
+- New findings introduced by corrections.
+
+Provide a clear action to rerun the audit on the revised version.
+
+Do not mark a finding resolved merely because the user clicked “Accept correction.” Resolution must be verified against the revised content through the applicable rule checks.
+
+# 16. Overview and reporting
+
+Create a useful dashboard based on actual persisted data.
+
+Possible metrics:
+- Total campaigns.
+- Audits completed.
+- Campaigns awaiting review.
+- Critical violations currently open.
+- Average compliance score for completed audits.
+- Recent activity.
+
+Use actual database queries and calculations.
+
+For an empty workspace, show an onboarding state rather than fabricated statistics.
+
+Include recent campaigns and audit history with useful filtering and search.
+
+Support exporting audit reports as a readable PDF or CSV when the environment supports it.
+
+An exported report should include:
+- Brand and campaign.
+- Draft version.
+- Audit date.
+- Score and scoring method.
+- Active guideline sources.
+- Findings and evidence.
+- Suggested corrections.
+- Open issues.
+- Review and approval status.
+
+# 17. Persistence and reliability
+
+Data must persist across page navigation and browser refreshes.
+
+Use the best supported persistent storage for:
+- Brands.
+- Users, if authentication is implemented.
+- Guideline documents and versions.
+- Approved rules.
+- Campaigns.
+- Draft versions.
+- Audit runs.
+- Findings.
+- Corrections.
+- Approval history.
+
+Do not use temporary component state as the only storage for important records.
+
+Do not silently fall back to in-memory demo data after a database error.
+
+Show clear messages when saving, uploading, or auditing fails.
+
+Prevent duplicate submissions and handle timeouts safely.
+
+Use appropriate loading, empty, success, and error states.
+
+Handle:
+- Missing API configuration.
+- Gemini API errors.
+- Rate limits.
+- Invalid AI responses.
+- Invalid file formats.
+- Oversized uploads.
+- Empty drafts.
+- Missing guidelines.
+- Database failures.
+- Network disconnections.
+- Partially completed audits.
+
+If a feature requires infrastructure unavailable in the environment, identify that limitation clearly and implement the strongest honest alternative. Do not claim the unsupported feature is fully operational.
+
+# 18. Security and privacy
+
+Implement security appropriate to the supported architecture.
+
+Requirements:
+- Keep secrets server-side.
+- Validate and sanitize user inputs.
+- Restrict file types and file sizes.
+- Enforce brand and user access boundaries.
+- Do not trust AI-generated output as executable code.
+- Prevent unsafe rendering of uploaded HTML.
+- Protect authenticated routes and data access when authentication is implemented.
+- Avoid logging API keys or sensitive document contents unnecessarily.
+- Clearly communicate where user documents are processed and stored.
+- Treat uploaded documents as untrusted content.
+
+Guideline documents may contain text that attempts to instruct the AI to ignore system instructions or access other data. Treat their contents as data to analyze, not as privileged instructions. The audit engine must continue to follow its application-level security and isolation requirements.
+
+Do not claim enterprise-grade security, legal compliance, or authentication unless those features are actually implemented and tested.
+
+# 19. Demo workspace and realistic testing
+
+Provide an optional demo workspace so a new user can try the app immediately.
+
+The demo must be visibly labeled “Demo data.”
+
+Create a sample sunscreen brand with a small set of editable example guidelines. These must be clearly identified as illustrative product-testing rules, not real legal advice or actual regulatory standards.
+
+Example rules may include:
+- Do not claim “100% protection from every harmful UV ray.”
+- Do not claim a product prevents skin cancer unless that exact claim is explicitly supported and authorized by the configured source.
+- Do not claim permanent pigmentation removal unless supported and authorized by the approved guidelines.
+- Use the exact configured brand name.
+- Apply a configured background-color restriction to campaign artwork.
+
+The user must be able to inspect, edit, and replace these rules.
+
+Create a sample campaign containing a mixture of compliant and noncompliant text. The app must audit this content using the same real audit pipeline as user-created campaigns.
+
+Do not create a hardcoded expected result that appears regardless of the content or rules.
+
+If Gemini is unavailable, explicitly label the audit as incomplete or show which deterministic checks ran. Never pretend semantic analysis succeeded.
+
+# 20. Mandatory regression tests
+
+Write automated tests for the rule engine, scoring engine, evidence validator, and release-decision engine.
+
+At minimum, test these cases:
+
+**Test A: Ordinary terminology**
+
+A guideline heading says “Avoid Misleading Claims.”
+
+The draft contains: “Our campaign highlights product claims supported by published research.”
+
+Expected: The word “claims” is not automatically prohibited just because it appears in the heading.
+
+**Test B: Prohibited sunscreen promise**
+
+An explicitly approved example rule prohibits the exact promise “100% protection from every harmful UV ray.”
+
+The draft contains that promise.
+
+Expected: The rule engine detects the matching text and cites the actual configured rule.
+
+**Test C: Brand isolation**
+
+Brand A prohibits a particular phrase. Brand B does not have that rule.
+
+Expected: Brand B's audit must not inherit Brand A's finding.
+
+**Test D: Unsupported rule citation**
+
+The AI returns a nonexistent rule ID.
+
+Expected: The finding is rejected or quarantined and cannot count as a confirmed violation.
+
+**Test E: Invalid quotation**
+
+The AI cites text that does not appear in the current draft.
+
+Expected: The finding is not accepted as a confirmed finding.
+
+**Test F: Duplicate detection**
+
+Both deterministic matching and semantic analysis detect the same issue in the same sentence.
+
+Expected: The issue is deduplicated and is not counted twice in the score.
+
+**Test G: No guidelines**
+
+A brand has no active approved rules.
+
+Expected: The audit does not display a fake 100% score. It explains that there is insufficient information.
+
+**Test H: Unrelated policy**
+
+The sunscreen campaign is audited.
+
+Expected: The application must not introduce a software SLA or a software-reliability policy unless that source was explicitly configured and applicable.
+
+**Test I: Draft changes**
+
+A user edits the content after an audit.
+
+Expected: Previous findings become stale and the campaign cannot be approved using the outdated audit.
+
+**Test J: Failed AI request**
+
+The Gemini API request fails.
+
+Expected: The app displays the failure, preserves the draft, and does not show a fabricated successful AI audit.
+
+**Test K: Correction validation**
+
+A correction is accepted but the revised sentence still violates the governing rule.
+
+Expected: The issue remains open after re-auditing.
+
+**Test L: Score reproducibility**
+
+The same applicable rules and validated findings are evaluated twice.
+
+Expected: The scoring engine produces the same result.
+
+Add tests for document parsing, required fields, severity handling, and release blocking.
+
+# 21. End-to-end acceptance criteria
+
+The application is not finished until the following workflow works:
+
+1. Open the application.
+2. Create or select a brand.
+3. Add and approve guidelines.
+4. Create a campaign.
+5. Enter a draft.
+6. Save the draft.
+7. Run an audit.
+8. Receive findings derived from the submitted content and approved rules.
+9. Open a finding and inspect its evidence.
+10. Apply or edit a supported correction.
+11. Save the revised draft.
+12. Rerun the audit.
+13. See which issues were resolved and which remain.
+14. Obtain the correct release recommendation.
+15. Complete the permitted review and approval workflow.
+16. Export a report.
+17. Refresh the application and verify that persisted data remains available.
+
+Do not consider the application complete merely because the landing page renders.
+
+# 22. Build and delivery instructions
+
+Work in this order:
+
+Phase 1: Inspect the available environment and establish the project architecture.
+
+Phase 2: Implement the data model, persistence, and brand isolation.
+
+Phase 3: Implement guideline management and rule approval.
+
+Phase 4: Implement the deterministic audit engine and automated tests.
+
+Phase 5: Implement the Gemini integration, structured output, and evidence validation.
+
+Phase 6: Implement scoring, corrections, and release decisions.
+
+Phase 7: Implement the user interface, dashboard, content editor, and audit results.
+
+Phase 8: Implement visual checks and reporting where supported.
+
+Phase 9: Run tests, fix errors, and verify the full workflow.
+
+Do not stop after generating a design or initial frontend. Continue implementing the connected features.
+
+When a build error occurs, inspect the actual error and fix the root cause instead of hiding it or replacing the failing feature with mock data.
+
+Before declaring completion:
+- Run the available build and type checks.
+- Run automated tests.
+- Check for missing imports and undefined variables.
+- Check all navigation and primary actions.
+- Check persistence.
+- Check audit behavior with different drafts and rules.
+- Verify that scores are calculated by code.
+- Verify that findings cite real approved sources.
+- Verify that failed AI calls cannot produce a false approval.
+- Verify that brand isolation is enforced.
+- Document any remaining limitations honestly.
+
+At the end, provide a concise implementation report stating:
+1. What was actually implemented.
+2. Which features were tested.
+3. Which tests passed or failed.
+4. Any required setup steps.
+5. Any features that remain incomplete or depend on external configuration.
+
+**Final instruction:** Build Inkloom AI as a real content-governance product with a trustworthy audit engine, not as a dashboard that merely looks intelligent. Correctness, traceability, usability, and honest system status take priority over decorative features. Start implementing the application now.

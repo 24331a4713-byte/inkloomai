@@ -1,0 +1,8 @@
+{
+  "name": "Inkloom AI - Brand Governance & Content QA",
+  "description": "AI-assisted brand governance platform to verify marketing content against approved brand guidelines, terminology, visual identity, and compliance policies before release.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
