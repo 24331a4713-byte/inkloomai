@@ -4,6 +4,8 @@ import { TopHeader } from './components/TopHeader';
 import { OverviewView } from './components/OverviewView';
 import { BrandsView } from './components/BrandsView';
 import { GuidelinesView } from './components/GuidelinesView';
+import { ClaimRegistryView } from './components/ClaimRegistryView';
+import { AnalyticsView } from './components/AnalyticsView';
 import { CampaignsView } from './components/CampaignsView';
 import { ContentEditorView } from './components/ContentEditorView';
 import { AuditResultsView } from './components/AuditResultsView';
@@ -23,6 +25,7 @@ import {
   DraftRevision,
   Finding,
   ApprovalRecord,
+  Claim,
 } from './types';
 
 function MainApp() {
@@ -35,6 +38,7 @@ function MainApp() {
   const [activeCampaign, setActiveCampaign] = useState<Campaign | null>(null);
   const [guidelines, setGuidelines] = useState<GuidelineDocument[]>([]);
   const [rules, setRules] = useState<BrandRule[]>([]);
+  const [claims, setClaims] = useState<Claim[]>([]);
   const [audits, setAudits] = useState<AuditRun[]>([]);
   const [latestAudit, setLatestAudit] = useState<AuditRun | null>(null);
   const [revisions, setRevisions] = useState<DraftRevision[]>([]);
@@ -93,13 +97,15 @@ function MainApp() {
     localStorage.setItem('inkloom_brand_id', brand.id);
 
     try {
-      const [docRes, ruleRes] = await Promise.all([
+      const [docRes, ruleRes, claimRes] = await Promise.all([
         fetch(`/api/guidelines?brandId=${brand.id}`).then((r) => r.json()),
         fetch(`/api/rules?brandId=${brand.id}`).then((r) => r.json()),
+        fetch(`/api/claims?brandId=${brand.id}`).then((r) => r.json()),
       ]);
 
       setGuidelines(Array.isArray(docRes) ? docRes : []);
       setRules(Array.isArray(ruleRes) ? ruleRes : []);
+      setClaims(Array.isArray(claimRes) ? claimRes : []);
 
       // Select first campaign belonging to this brand if active campaign doesn't match
       const brandCamps = allCamp.filter((c) => c.brandId === brand.id);
@@ -267,8 +273,9 @@ function MainApp() {
     setRevisions(Array.isArray(revs) ? revs : []);
   };
 
-  // Execute Compliance Audit
-  const handleRunAudit = async (targetCampaignId?: string): Promise<void> => {
+  // Execute Compliance Audit (with deduplication guard & real visual asset metadata)
+  const handleRunAudit = async (targetCampaignId?: string, visualMeta?: any): Promise<void> => {
+    if (isAuditing) return; // Prevent duplicate rapid submission
     const targetId = targetCampaignId || activeCampaign?.id;
     if (!targetId) return;
     setIsAuditing(true);
@@ -283,17 +290,14 @@ function MainApp() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           campaignId: targetId,
-          visualAssetMeta: camp?.visualAssetUrl
-            ? {
-                fileName: 'solaria_sunscreen_artwork.jpg',
-                width: 1920,
-                height: 1080,
-                dominantColors: ['#F59E0B', '#E5E7EB'],
-                hasLogo: true,
-              }
-            : undefined,
+          visualAssetMeta: visualMeta || undefined,
         }),
       });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || 'Audit execution request was rejected.');
+      }
 
       const auditRun: AuditRun = await res.json();
       setLatestAudit(auditRun);
@@ -324,10 +328,60 @@ function MainApp() {
       setActivePage('audit-results');
     } catch (err: any) {
       error('Audit Execution Error', err.message);
-      throw err;
     } finally {
       setIsAuditing(false);
     }
+  };
+
+  // Claim Registry Operations
+  const handleCreateClaim = async (claimData: Partial<Claim>) => {
+    const res = await fetch('/api/claims', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(claimData),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to create claim');
+    }
+    const created: Claim = await res.json();
+    setClaims((prev) => [created, ...prev]);
+    return created;
+  };
+
+  const handleUpdateClaim = async (id: string, updates: Partial<Claim>) => {
+    const res = await fetch(`/api/claims/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to update claim');
+    }
+    const updated: Claim = await res.json();
+    setClaims((prev) => prev.map((c) => (c.id === id ? updated : c)));
+    return updated;
+  };
+
+  const handleDeleteClaim = async (id: string) => {
+    const res = await fetch(`/api/claims/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to delete claim');
+    }
+    setClaims((prev) => prev.filter((c) => c.id !== id));
+    return true;
+  };
+
+  const handleTestClaimDraft = async (draftText: string) => {
+    if (!selectedBrand) throw new Error('No active brand selected');
+    const res = await fetch('/api/claims/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ draft: draftText, brandId: selectedBrand.id }),
+    });
+    return res.json();
   };
 
   // Apply Correction to Draft
@@ -522,6 +576,17 @@ function MainApp() {
             />
           )}
 
+          {activePage === 'claims' && (
+            <ClaimRegistryView
+              brand={selectedBrand}
+              claims={claims}
+              onCreateClaim={handleCreateClaim}
+              onUpdateClaim={handleUpdateClaim}
+              onDeleteClaim={handleDeleteClaim}
+              onTestDraft={handleTestClaimDraft}
+            />
+          )}
+
           {activePage === 'campaigns' && (
             <CampaignsView
               brand={selectedBrand}
@@ -543,7 +608,7 @@ function MainApp() {
               rules={rules}
               latestAudit={latestAudit}
               onSaveDraft={handleSaveDraft}
-              onRunAudit={handleRunAudit}
+              onRunAudit={(vMeta) => handleRunAudit(undefined, vMeta)}
               onApplyCorrection={handleApplyCorrection}
               onDismissFinding={handleDismissFinding}
               isAuditing={isAuditing}
@@ -574,6 +639,22 @@ function MainApp() {
               approvals={approvals}
               onApproveCampaign={handleApproveCampaign}
               setActivePage={setActivePage}
+            />
+          )}
+
+          {activePage === 'analytics' && (
+            <AnalyticsView
+              brand={selectedBrand}
+              audits={audits}
+              campaigns={campaigns}
+              rules={rules}
+              setActivePage={setActivePage}
+              onSelectAudit={(a) => {
+                setLatestAudit(a);
+                const camp = campaigns.find((c) => c.id === a.campaignId);
+                if (camp) setActiveCampaign(camp);
+                setActivePage('audit-results');
+              }}
             />
           )}
 

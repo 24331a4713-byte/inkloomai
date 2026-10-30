@@ -13,14 +13,18 @@ import { validateAndDeduplicateFindings } from './src/engine/evidenceValidator';
 import { calculateComplianceScore } from './src/engine/scoringEngine';
 import { evaluateReleaseDecision } from './src/engine/releaseDecisionEngine';
 import { runVisualComplianceAudit } from './src/engine/visualEngine';
+import { runClaimRegistryAudit } from './src/engine/claimEngine';
 import { extractRulesFromText } from './src/server/ruleExtractor';
 import { runAllRegressionTests } from './src/engine/regressionTests';
-import { AuditRun, Campaign, Finding } from './src/types';
+import { AuditRun, Campaign, Finding, Claim } from './src/types';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+
+// Deduplication tracker to prevent rapid repeated submissions
+const inFlightAudits = new Map<string, number>();
 
 app.use(express.json({ limit: '15mb' }));
 
@@ -176,6 +180,90 @@ app.delete('/api/rules/:id', (req, res) => {
   res.json({ success: true });
 });
 
+// --- CLAIM REGISTRY API ---
+app.get('/api/claims', (req, res) => {
+  const brandId = req.query.brandId as string;
+  if (brandId) {
+    return res.json(db.getClaimsByBrand(brandId));
+  }
+  res.json(db.getAllClaims());
+});
+
+app.get('/api/claims/:id', (req, res) => {
+  const claim = db.getClaimById(req.params.id);
+  if (!claim) return res.status(404).json({ error: 'Claim not found' });
+  res.json(claim);
+});
+
+app.post('/api/claims', (req, res) => {
+  const { brandId, claimText, category, sourceEvidence, evidenceUrl, status, reviewerName, reviewerRole, expiryDate, tags, usageNotes } = req.body;
+  if (!brandId || !claimText || !sourceEvidence || !expiryDate) {
+    return res.status(400).json({ error: 'brandId, claimText, sourceEvidence, and expiryDate are required fields' });
+  }
+
+  const newClaim: Claim = {
+    id: `claim-${Date.now()}`,
+    brandId,
+    claimText: claimText.trim(),
+    category: category || 'general',
+    sourceEvidence: sourceEvidence.trim(),
+    evidenceUrl: evidenceUrl || '',
+    status: status || 'pending_review',
+    reviewerName: reviewerName || '',
+    reviewerRole: reviewerRole || '',
+    reviewedAt: status === 'approved' || status === 'rejected' ? new Date().toISOString() : undefined,
+    expiryDate,
+    tags: Array.isArray(tags) ? tags : [],
+    usageNotes: usageNotes || '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  const created = db.createClaim(newClaim);
+  res.status(201).json(created);
+});
+
+app.put('/api/claims/:id', (req, res) => {
+  const updated = db.updateClaim(req.params.id, req.body);
+  if (!updated) return res.status(404).json({ error: 'Claim not found' });
+  res.json(updated);
+});
+
+app.delete('/api/claims/:id', (req, res) => {
+  const deleted = db.deleteClaim(req.params.id);
+  if (!deleted) return res.status(404).json({ error: 'Claim not found' });
+  res.json({ success: true });
+});
+
+app.post('/api/claims/check', (req, res) => {
+  const { draft, brandId } = req.body;
+  if (!brandId) return res.status(400).json({ error: 'brandId is required' });
+  const brand = db.getBrandById(brandId);
+  if (!brand) return res.status(404).json({ error: 'Brand not found' });
+
+  const brandClaims = db.getClaimsByBrand(brandId);
+  const result = runClaimRegistryAudit(draft || '', brandClaims, brand);
+  res.json(result);
+});
+
+// System Storage Status & Diagnostics
+app.get('/api/system/storage-info', (req, res) => {
+  res.json({
+    appName: 'INKLOOM AI',
+    status: 'operational',
+    storage: db.getStorageStatus(),
+    environment: {
+      nodeEnv: process.env.NODE_ENV || 'development',
+      platform: process.platform,
+      hasGeminiApiKey: !!process.env.GEMINI_API_KEY,
+    },
+    deploymentGuidance: {
+      isEphemeralVercel: process.env.VERCEL === '1',
+      storageNotice: 'File-backed persistence operates safely on persistent disks (Docker, VM, Render, Fly.io, Cloud Run). For Vercel serverless functions, external DB adapter is recommended.',
+    },
+  });
+});
+
 // Campaigns
 app.get('/api/campaigns', (req, res) => {
   const brandId = req.query.brandId as string;
@@ -233,11 +321,29 @@ app.post('/api/audits/run', async (req, res) => {
     const { campaignId, visualAssetMeta } = req.body;
     if (!campaignId) return res.status(400).json({ error: 'campaignId is required' });
 
+    // Deduplication check: prevent rapid repeated clicks within 1.5 seconds
+    const lastRunTime = inFlightAudits.get(campaignId) || 0;
+    if (Date.now() - lastRunTime < 1500) {
+      return res.status(429).json({
+        error: 'Audit is already in progress or was just submitted for this campaign. Please wait a moment.',
+      });
+    }
+    inFlightAudits.set(campaignId, Date.now());
+
     const campaign = db.getCampaignById(campaignId);
     if (!campaign) return res.status(404).json({ error: 'Campaign not found' });
 
     const brand = db.getBrandById(campaign.brandId);
     if (!brand) return res.status(404).json({ error: 'Brand not found' });
+
+    const draft = campaign.currentDraft || '';
+
+    // Validation: Require non-empty draft copy or visual asset
+    if (!draft.trim() && !visualAssetMeta && !campaign.visualAssetUrl) {
+      return res.status(400).json({
+        error: 'Draft content is empty. Please enter marketing copy or upload a visual asset before running an audit.',
+      });
+    }
 
     // Retrieve active approved rules belonging to the current brand (Strict Brand Isolation!)
     const allBrandRules = db.getRulesByBrand(brand.id);
@@ -245,12 +351,15 @@ app.post('/api/audits/run', async (req, res) => {
       (r) => r.isActive && r.humanApprovalStatus === 'approved'
     );
 
-    const draft = campaign.currentDraft || '';
-
     // Step A: Deterministic Checks
     const deterministicFindings = runDeterministicAudit(draft, activeRules, brand);
 
-    // Step B: Semantic AI Checks (Gemini)
+    // Step B: Claim Registry Checks (Validate Claims against active, expired, unapproved registry records)
+    const brandClaims = db.getClaimsByBrand(brand.id);
+    const claimAuditResult = runClaimRegistryAudit(draft, brandClaims, brand);
+    const claimFindings = claimAuditResult.findings;
+
+    // Step C: Semantic AI Checks (Gemini)
     let semanticFindings: Finding[] = [];
     let isAIRequestFailed = false;
     let aiFailureReason: string | undefined;
@@ -264,7 +373,7 @@ app.post('/api/audits/run', async (req, res) => {
       }
     }
 
-    // Step C: Visual Checks
+    // Step D: Visual Checks (Real image analysis or metadata)
     let visualFindings: Finding[] = [];
     if (visualAssetMeta || campaign.visualAssetUrl) {
       const visualReport = runVisualComplianceAudit(
@@ -275,9 +384,10 @@ app.post('/api/audits/run', async (req, res) => {
       visualFindings = visualReport.visualFindings;
     }
 
-    // Combine raw candidate findings
+    // Combine raw candidate findings from all engines
     const rawCandidateFindings = [
       ...deterministicFindings,
+      ...claimFindings,
       ...semanticFindings,
       ...visualFindings,
     ];
@@ -368,6 +478,17 @@ app.post('/api/campaigns/:id/approve', (req, res) => {
 
   const audit = db.getAuditById(auditId);
   if (!audit) return res.status(404).json({ error: 'Audit run not found' });
+
+  // Deduplication check: prevent duplicate submissions within 3 seconds
+  const recentApprovals = db.getApprovalsByCampaign(campaign.id);
+  const isDuplicate = recentApprovals.some(
+    (a) => a.auditId === auditId && a.action === action && Date.now() - new Date(a.timestamp).getTime() < 3000
+  );
+  if (isDuplicate) {
+    return res.status(429).json({
+      error: 'Duplicate approval submission detected. This action was already recorded.',
+    });
+  }
 
   // Verification: Cannot approve if critical violations exist or if draft is stale!
   if (action === 'approved' || action === 'released') {

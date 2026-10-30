@@ -14,6 +14,7 @@ import {
   DraftRevision,
   AuditRun,
   ApprovalRecord,
+  Claim,
 } from '../types';
 
 interface DatabaseSchema {
@@ -24,6 +25,7 @@ interface DatabaseSchema {
   revisions: DraftRevision[];
   audits: AuditRun[];
   approvals: ApprovalRecord[];
+  claims: Claim[];
 }
 
 const DATA_DIR = path.resolve(process.cwd(), 'data');
@@ -31,20 +33,46 @@ const DB_PATH = path.join(DATA_DIR, 'inkloom-db.json');
 
 export class Database {
   private data: DatabaseSchema;
+  private isReadOnlyFallback: boolean = false;
 
   constructor() {
     this.data = this.loadData();
   }
 
+  public getStorageStatus() {
+    return {
+      type: 'json_file_storage',
+      path: DB_PATH,
+      isReadOnlyFallback: this.isReadOnlyFallback,
+      brandsCount: this.data.brands.length,
+      claimsCount: this.data.claims?.length || 0,
+      auditsCount: this.data.audits.length,
+      campaignsCount: this.data.campaigns.length,
+      rulesCount: this.data.rules.length,
+    };
+  }
+
   private loadData(): DatabaseSchema {
     try {
       if (!fs.existsSync(DATA_DIR)) {
-        fs.mkdirSync(DATA_DIR, { recursive: true });
+        try {
+          fs.mkdirSync(DATA_DIR, { recursive: true });
+        } catch (mkErr) {
+          console.warn('[Storage] Read-only directory environment, memory mode active:', mkErr);
+          this.isReadOnlyFallback = true;
+        }
       }
 
       if (fs.existsSync(DB_PATH)) {
         const raw = fs.readFileSync(DB_PATH, 'utf-8');
-        return JSON.parse(raw);
+        const parsed: DatabaseSchema = JSON.parse(raw);
+        // Seamless migration: ensure claims array exists
+        if (!Array.isArray(parsed.claims) || parsed.claims.length === 0) {
+          const demoClaims = this.getSeedClaims();
+          parsed.claims = demoClaims;
+          this.saveData(parsed);
+        }
+        return parsed;
       }
     } catch (err) {
       console.error('Error reading database file, initializing fresh:', err);
@@ -61,13 +89,102 @@ export class Database {
         fs.mkdirSync(DATA_DIR, { recursive: true });
       }
       fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Failed to write database file:', err);
+      this.isReadOnlyFallback = false;
+    } catch (err: any) {
+      console.warn('[Storage] Warning: File system write failed (likely serverless ephemeral/read-only environment). Continuing in-memory:', err?.message || err);
+      this.isReadOnlyFallback = true;
     }
   }
 
   private persist() {
     this.saveData(this.data);
+  }
+
+  // --- SEED CLAIMS REGISTRY (Demo Sunscreen Brand) ---
+  public getSeedClaims(): Claim[] {
+    const brandId = 'brand-solaria-demo';
+    return [
+      {
+        id: 'claim-sol-1',
+        brandId,
+        claimText: 'Broad-spectrum SPF 50+ barrier defense against UVA and UVB rays',
+        category: 'clinical',
+        sourceEvidence: 'Clinical In-Vitro Photoprotection Study #SOL-2025-08; FDA 21 CFR 352 Compliance Dossier.',
+        evidenceUrl: 'https://solaria-dermacare.example.com/clinical/sol-2025-08.pdf',
+        status: 'approved',
+        reviewerName: 'Dr. Elena Vance',
+        reviewerRole: 'Lead Dermatologist',
+        reviewedAt: '2026-01-15T10:00:00.000Z',
+        expiryDate: '2027-12-31',
+        tags: ['SPF 50+', 'broad-spectrum', 'clinical', 'UVB'],
+        usageNotes: 'Approved for digital ads, packaging, and social media with mandatory 15-minute disclaimer.',
+        createdAt: '2026-01-15T10:00:00.000Z',
+        updatedAt: '2026-01-15T10:00:00.000Z',
+      },
+      {
+        id: 'claim-sol-2',
+        brandId,
+        claimText: 'Water-resistant up to 80 minutes',
+        category: 'efficacy',
+        sourceEvidence: 'Independent Laboratory Immersion Assay ISO 24444 (Report #WT-80-2025).',
+        status: 'approved',
+        reviewerName: 'Marcus Chen',
+        reviewerRole: 'Compliance Officer',
+        reviewedAt: '2026-02-10T14:30:00.000Z',
+        expiryDate: '2027-08-30',
+        tags: ['water-resistance', 'active-wear'],
+        usageNotes: 'Must always be paired with reapplication advisory: "reapply after 80 minutes of swimming or sweating".',
+        createdAt: '2026-02-10T14:30:00.000Z',
+        updatedAt: '2026-02-10T14:30:00.000Z',
+      },
+      {
+        id: 'claim-sol-3',
+        brandId,
+        claimText: 'All-day 24-hour hydration lock without reapplication',
+        category: 'efficacy',
+        sourceEvidence: 'Internal Pilot Moisture Sensor Test 2024 (Expired Certificate).',
+        status: 'expired',
+        reviewerName: 'Marcus Chen',
+        reviewerRole: 'Compliance Officer',
+        reviewedAt: '2024-06-01T09:00:00.000Z',
+        expiryDate: '2025-06-01',
+        tags: ['hydration', 'expired-claim'],
+        usageNotes: 'EXPIRED: Do not use in active campaigns. Requires new 2026 corneometry trial before reactivation.',
+        createdAt: '2024-06-01T09:00:00.000Z',
+        updatedAt: '2025-06-02T00:00:00.000Z',
+      },
+      {
+        id: 'claim-sol-4',
+        brandId,
+        claimText: 'Permanently erases hyperpigmentation and sun damage',
+        category: 'clinical',
+        sourceEvidence: 'Unverified testimonial submissions without randomized double-blind clinical validation.',
+        status: 'rejected',
+        reviewerName: 'Dr. Elena Vance',
+        reviewerRole: 'Lead Dermatologist',
+        reviewedAt: '2026-03-01T11:20:00.000Z',
+        expiryDate: '2026-12-31',
+        tags: ['pigmentation', 'rejected'],
+        usageNotes: 'STRICTLY PROHIBITED: Misleading medical promise. Only gradual cosmetic fading may be claimed.',
+        createdAt: '2026-03-01T11:20:00.000Z',
+        updatedAt: '2026-03-01T11:20:00.000Z',
+      },
+      {
+        id: 'claim-sol-5',
+        brandId,
+        claimText: 'Micro-algae photolyase enzyme speeds natural cellular DNA repair by 40%',
+        category: 'ingredient',
+        sourceEvidence: 'Phase II In-Vitro Cellular Repair Assay pending final peer review sign-off.',
+        status: 'pending_review',
+        reviewerName: 'Pending Medical Board',
+        reviewerRole: 'Clinical Advisory Panel',
+        expiryDate: '2027-01-01',
+        tags: ['enzymes', 'pending', 'cellular-repair'],
+        usageNotes: 'Under review. Not authorized for consumer-facing release until final peer review.',
+        createdAt: '2026-10-10T16:00:00.000Z',
+        updatedAt: '2026-10-10T16:00:00.000Z',
+      },
+    ];
   }
 
   // --- SEED DATA (Demo Sunscreen Brand) ---
@@ -290,6 +407,7 @@ Trusted by outdoor athletes worldwide, our mineral fluid leaves no white cast an
       revisions: [demoRevision],
       audits: [],
       approvals: [],
+      claims: this.getSeedClaims(),
     };
   }
 
@@ -324,6 +442,7 @@ Trusted by outdoor athletes worldwide, our mineral fluid leaves no white cast an
     this.data.rules = this.data.rules.filter((r) => r.brandId !== id);
     this.data.campaigns = this.data.campaigns.filter((c) => c.brandId !== id);
     this.data.audits = this.data.audits.filter((a) => a.brandId !== id);
+    this.data.claims = (this.data.claims || []).filter((c) => c.brandId !== id);
     this.persist();
     return this.data.brands.length < before;
   }
@@ -498,6 +617,49 @@ Trusted by outdoor athletes worldwide, our mineral fluid leaves no white cast an
 
   public getApprovalsByCampaign(campaignId: string): ApprovalRecord[] {
     return this.data.approvals.filter((a) => a.campaignId === campaignId);
+  }
+
+  // --- CLAIM REGISTRY OPERATIONS (STRICT BRAND ISOLATION) ---
+  public getClaimsByBrand(brandId: string): Claim[] {
+    const claims = this.data.claims || [];
+    return claims.filter((c) => c.brandId === brandId);
+  }
+
+  public getAllClaims(): Claim[] {
+    return this.data.claims || [];
+  }
+
+  public getClaimById(id: string): Claim | undefined {
+    const claims = this.data.claims || [];
+    return claims.find((c) => c.id === id);
+  }
+
+  public createClaim(claim: Claim): Claim {
+    if (!this.data.claims) this.data.claims = [];
+    this.data.claims.unshift(claim);
+    this.persist();
+    return claim;
+  }
+
+  public updateClaim(id: string, updates: Partial<Claim>): Claim | null {
+    if (!this.data.claims) this.data.claims = [];
+    const idx = this.data.claims.findIndex((c) => c.id === id);
+    if (idx === -1) return null;
+    this.data.claims[idx] = {
+      ...this.data.claims[idx],
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+    this.persist();
+    return this.data.claims[idx];
+  }
+
+  public deleteClaim(id: string): boolean {
+    if (!this.data.claims) this.data.claims = [];
+    const before = this.data.claims.length;
+    this.data.claims = this.data.claims.filter((c) => c.id !== id);
+    this.persist();
+    return this.data.claims.length < before;
   }
 
   public resetDemoData(): void {

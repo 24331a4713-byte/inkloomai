@@ -13,6 +13,8 @@ import {
   ChevronDown,
   PanelLeftClose,
   PanelLeft,
+  FileCheck2,
+  TrendingUp,
 } from 'lucide-react';
 import { Brand } from '../types';
 
@@ -20,10 +22,12 @@ export type NavPage =
   | 'overview'
   | 'brands'
   | 'guidelines'
+  | 'claims'
   | 'campaigns'
   | 'editor'
   | 'audit-results'
   | 'review-approvals'
+  | 'analytics'
   | 'history'
   | 'settings';
 
@@ -52,10 +56,12 @@ export const Navigation: React.FC<NavigationProps> = ({
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'brands', label: 'Brands', icon: Building2 },
     { id: 'guidelines', label: 'Brand Guidelines', icon: BookOpenCheck },
+    { id: 'claims', label: 'Claim Registry', icon: FileCheck2 },
     { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
-    { id: 'editor', label: 'Content Editor', icon: FileEdit },
+    { id: 'editor', label: 'Content & Visuals', icon: FileEdit },
     { id: 'audit-results', label: 'Audit Results', icon: ShieldAlert },
     { id: 'review-approvals', label: 'Review & Approvals', icon: ClipboardCheck },
+    { id: 'analytics', label: 'Compliance Analytics', icon: TrendingUp },
     { id: 'history', label: 'Audit History', icon: History },
     { id: 'settings', label: 'Settings & Tests', icon: Settings },
   ];

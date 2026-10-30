@@ -181,8 +181,8 @@
       "draftHash": "hash-demo-v1",
       "status": "changes_required",
       "createdAt": "2026-10-15T11:00:00.000Z",
-      "updatedAt": "2026-10-25T02:24:19.171Z",
-      "lastAuditId": "audit-1792895059171",
+      "updatedAt": "2026-10-30T02:08:01.718Z",
+      "lastAuditId": "audit-1793326081718",
       "lastAuditedVersion": 1
     },
     {
@@ -200,6 +200,20 @@
       "updatedAt": "2026-10-25T02:34:00.175Z",
       "lastAuditId": "audit-1792895640174",
       "lastAuditedVersion": 1
+    },
+    {
+      "id": "camp-1793326007437",
+      "brandId": "brand-solaria-demo",
+      "name": "Empty Test",
+      "contentType": "advertisements",
+      "targetAudience": "General audience",
+      "language": "en",
+      "currentDraft": "",
+      "draftVersion": 1,
+      "draftHash": "hash-1793326007437",
+      "status": "draft",
+      "createdAt": "2026-10-30T02:06:47.437Z",
+      "updatedAt": "2026-10-30T02:06:47.437Z"
     }
   ],
   "revisions": [
@@ -218,9 +232,655 @@
       "content": "Enjoy everyday radiant glow with solaria. Our product delivers 100% protection from every harmful UV ray.",
       "changeSummary": "Initial draft creation",
       "createdAt": "2026-10-25T02:33:48.021Z"
+    },
+    {
+      "id": "rev-camp-1793326007437-v1",
+      "campaignId": "camp-1793326007437",
+      "version": 1,
+      "content": "",
+      "changeSummary": "Initial draft creation",
+      "createdAt": "2026-10-30T02:06:47.437Z"
     }
   ],
   "audits": [
+    {
+      "id": "audit-1793326081718",
+      "brandId": "brand-solaria-demo",
+      "campaignId": "camp-solaria-summer-2026",
+      "draftVersion": 1,
+      "draftHash": "hash-demo-v1",
+      "activeGuidelineIds": [
+        "doc-solaria-guide-1"
+      ],
+      "applicableRuleIds": [
+        "rule-sol-100uv",
+        "rule-sol-cancer",
+        "rule-sol-pigment",
+        "rule-sol-disclaimer",
+        "rule-sol-naming",
+        "rule-sol-bgcolor"
+      ],
+      "timestamp": "2026-10-30T02:08:01.718Z",
+      "engineVersion": "2.4.0-hybrid",
+      "deterministicFindings": [
+        {
+          "id": "det-rule-sol-100uv-104",
+          "ruleId": "rule-sol-100uv",
+          "ruleCategory": "prohibited_claims",
+          "ruleDescription": "Do not claim 100% protection from every harmful UV ray",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 1.1",
+          "sourceExcerpt": "Rule 1.1: Do not claim \"100% protection from every harmful UV ray\". No sun protection formula provides 100% ray blockage.",
+          "quotedText": "100% protection from every harmful UV ray",
+          "location": {
+            "startChar": 104,
+            "endChar": 145
+          },
+          "severity": "critical",
+          "explanation": "Explicit prohibited statement found: \"100% protection from every harmful UV ray\". Guideline prohibits this claim.",
+          "evidence": "Rule 1.1: Do not claim \"100% protection from every harmful UV ray\". No sun protection formula provides 100% ray blockage.",
+          "suggestedCorrection": "Broad-spectrum SPF 50+ barrier defense against UVA and UVB rays",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        },
+        {
+          "id": "det-rule-sol-pigment-272",
+          "ruleId": "rule-sol-pigment",
+          "ruleCategory": "unsupported_factual_claims",
+          "ruleDescription": "Do not claim permanent pigmentation removal or permanent erasure of sun damage",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 2.1",
+          "sourceExcerpt": "Rule 2.1: Do not claim \"permanent pigmentation removal\" or \"erases sun damage forever\". Clinical evidence supports dark spot fading, not permanent genetic eradication.",
+          "quotedText": "permanent pigmentation removal",
+          "location": {
+            "startChar": 272,
+            "endChar": 302
+          },
+          "severity": "major",
+          "explanation": "Explicit prohibited statement found: \"permanent pigmentation removal\". Guideline prohibits this claim.",
+          "evidence": "Rule 2.1: Do not claim \"permanent pigmentation removal\" or \"erases sun damage forever\". Clinical evidence supports dark spot fading, not permanent genetic eradication.",
+          "suggestedCorrection": "visibly diminishes the appearance of sun-induced dark spots over 8 weeks",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        },
+        {
+          "id": "det-rule-sol-naming-46",
+          "ruleId": "rule-sol-naming",
+          "ruleCategory": "brand_spelling_naming",
+          "ruleDescription": "Enforce correct capitalization of \"Solaria Dermacare\" or \"Solaria\"",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 3.1",
+          "sourceExcerpt": "Rule 3.1: The brand name must always be capitalized as \"Solaria Dermacare\" or \"Solaria\". Do not use lowercase \"solaria\" or alternate spellings like \"Solaris\".",
+          "quotedText": "solaria",
+          "location": {
+            "startChar": 46,
+            "endChar": 53
+          },
+          "severity": "minor",
+          "explanation": "Brand name capitalization or spelling mismatch: \"solaria\". Approved brand name is \"Solaria\".",
+          "evidence": "Rule 3.1: The brand name must always be capitalized as \"Solaria Dermacare\" or \"Solaria\". Do not use lowercase \"solaria\" or alternate spellings like \"Solaris\".",
+          "suggestedCorrection": "Solaria",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        }
+      ],
+      "semanticFindings": [
+        {
+          "id": "sem-fallback-rule-sol-100uv-104",
+          "ruleId": "rule-sol-100uv",
+          "ruleCategory": "prohibited_claims",
+          "ruleDescription": "Do not claim 100% protection from every harmful UV ray",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 1.1",
+          "sourceExcerpt": "Rule 1.1: Do not claim \"100% protection from every harmful UV ray\". No sun protection formula provides 100% ray blockage.",
+          "quotedText": "100% protection from every harmful UV ray",
+          "location": {
+            "startChar": 104,
+            "endChar": 145
+          },
+          "severity": "critical",
+          "explanation": "Contextual claim flagged: \"100% protection from every harmful UV ray\". Guideline requires qualified authorization.",
+          "evidence": "Rule 1.1: Do not claim \"100% protection from every harmful UV ray\". No sun protection formula provides 100% ray blockage.",
+          "suggestedCorrection": "Broad-spectrum SPF 50+ barrier defense against UVA and UVB rays",
+          "confidence": "high",
+          "detectionMethod": "semantic",
+          "resolutionStatus": "open"
+        },
+        {
+          "id": "sem-fallback-rule-sol-pigment-272",
+          "ruleId": "rule-sol-pigment",
+          "ruleCategory": "unsupported_factual_claims",
+          "ruleDescription": "Do not claim permanent pigmentation removal or permanent erasure of sun damage",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 2.1",
+          "sourceExcerpt": "Rule 2.1: Do not claim \"permanent pigmentation removal\" or \"erases sun damage forever\". Clinical evidence supports dark spot fading, not permanent genetic eradication.",
+          "quotedText": "permanent pigmentation removal",
+          "location": {
+            "startChar": 272,
+            "endChar": 302
+          },
+          "severity": "major",
+          "explanation": "Contextual claim flagged: \"permanent pigmentation removal\". Guideline requires qualified authorization.",
+          "evidence": "Rule 2.1: Do not claim \"permanent pigmentation removal\" or \"erases sun damage forever\". Clinical evidence supports dark spot fading, not permanent genetic eradication.",
+          "suggestedCorrection": "visibly diminishes the appearance of sun-induced dark spots over 8 weeks",
+          "confidence": "high",
+          "detectionMethod": "semantic",
+          "resolutionStatus": "open"
+        }
+      ],
+      "visualFindings": [],
+      "validatedFindings": [
+        {
+          "id": "det-rule-sol-100uv-104",
+          "ruleId": "rule-sol-100uv",
+          "ruleCategory": "prohibited_claims",
+          "ruleDescription": "Do not claim 100% protection from every harmful UV ray",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 1.1",
+          "sourceExcerpt": "Rule 1.1: Do not claim \"100% protection from every harmful UV ray\". No sun protection formula provides 100% ray blockage.",
+          "quotedText": "100% protection from every harmful UV ray",
+          "location": {
+            "startChar": 104,
+            "endChar": 145
+          },
+          "severity": "critical",
+          "explanation": "Explicit prohibited statement found: \"100% protection from every harmful UV ray\". Guideline prohibits this claim.",
+          "evidence": "Rule 1.1: Do not claim \"100% protection from every harmful UV ray\". No sun protection formula provides 100% ray blockage.",
+          "suggestedCorrection": "Broad-spectrum SPF 50+ barrier defense against UVA and UVB rays",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        },
+        {
+          "id": "det-rule-sol-pigment-272",
+          "ruleId": "rule-sol-pigment",
+          "ruleCategory": "unsupported_factual_claims",
+          "ruleDescription": "Do not claim permanent pigmentation removal or permanent erasure of sun damage",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 2.1",
+          "sourceExcerpt": "Rule 2.1: Do not claim \"permanent pigmentation removal\" or \"erases sun damage forever\". Clinical evidence supports dark spot fading, not permanent genetic eradication.",
+          "quotedText": "permanent pigmentation removal",
+          "location": {
+            "startChar": 272,
+            "endChar": 302
+          },
+          "severity": "major",
+          "explanation": "Explicit prohibited statement found: \"permanent pigmentation removal\". Guideline prohibits this claim.",
+          "evidence": "Rule 2.1: Do not claim \"permanent pigmentation removal\" or \"erases sun damage forever\". Clinical evidence supports dark spot fading, not permanent genetic eradication.",
+          "suggestedCorrection": "visibly diminishes the appearance of sun-induced dark spots over 8 weeks",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        },
+        {
+          "id": "det-rule-sol-naming-46",
+          "ruleId": "rule-sol-naming",
+          "ruleCategory": "brand_spelling_naming",
+          "ruleDescription": "Enforce correct capitalization of \"Solaria Dermacare\" or \"Solaria\"",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 3.1",
+          "sourceExcerpt": "Rule 3.1: The brand name must always be capitalized as \"Solaria Dermacare\" or \"Solaria\". Do not use lowercase \"solaria\" or alternate spellings like \"Solaris\".",
+          "quotedText": "solaria",
+          "location": {
+            "startChar": 46,
+            "endChar": 53
+          },
+          "severity": "minor",
+          "explanation": "Brand name capitalization or spelling mismatch: \"solaria\". Approved brand name is \"Solaria\".",
+          "evidence": "Rule 3.1: The brand name must always be capitalized as \"Solaria Dermacare\" or \"Solaria\". Do not use lowercase \"solaria\" or alternate spellings like \"Solaris\".",
+          "suggestedCorrection": "Solaria",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        },
+        {
+          "id": "finding-unsupported-guarantees-permanent-261",
+          "ruleId": "claim-substantiation-required",
+          "ruleCategory": "unsupported_factual_claims",
+          "ruleDescription": "Unsubstantiated Marketing Claim: \"guarantees permanent\" requires proof in Claim Registry",
+          "sourceDocId": "claim-policy",
+          "sourceDocTitle": "Solaria Dermacare Factual Claims Policy",
+          "pageOrSection": "Claims Substantiation Guidelines",
+          "sourceExcerpt": "All clinical, scientific, or absolute performance claims must be entered into the Claim Registry with accredited evidence before public release.",
+          "quotedText": "guarantees permanent",
+          "location": {
+            "startChar": 261,
+            "endChar": 281
+          },
+          "severity": "major",
+          "explanation": "The assertion \"guarantees permanent\" appears in the draft but is not substantiated by any approved entry in the Solaria Dermacare Claim Registry.",
+          "evidence": "Mandatory claim substantiation standard.",
+          "suggestedCorrection": "Register authorized clinical trial dossier in the Claim Registry or soften copy.",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        },
+        {
+          "id": "finding-unsupported-100%-guarantee/protection-104",
+          "ruleId": "claim-substantiation-required",
+          "ruleCategory": "unsupported_factual_claims",
+          "ruleDescription": "Unsubstantiated Marketing Claim: \"100% protection\" requires proof in Claim Registry",
+          "sourceDocId": "claim-policy",
+          "sourceDocTitle": "Solaria Dermacare Factual Claims Policy",
+          "pageOrSection": "Claims Substantiation Guidelines",
+          "sourceExcerpt": "All clinical, scientific, or absolute performance claims must be entered into the Claim Registry with accredited evidence before public release.",
+          "quotedText": "100% protection",
+          "location": {
+            "startChar": 104,
+            "endChar": 119
+          },
+          "severity": "major",
+          "explanation": "The assertion \"100% protection\" appears in the draft but is not substantiated by any approved entry in the Solaria Dermacare Claim Registry.",
+          "evidence": "Mandatory claim substantiation standard.",
+          "suggestedCorrection": "Register authorized clinical trial dossier in the Claim Registry or soften copy.",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        }
+      ],
+      "quarantinedFindings": [],
+      "scoreCalculation": {
+        "criticalCount": 1,
+        "majorCount": 2,
+        "minorCount": 1,
+        "criticalWeight": 10,
+        "majorWeight": 5,
+        "minorWeight": 2,
+        "potentialPenalty": 22,
+        "maxPenalty": 37,
+        "complianceScore": 41,
+        "isProvisional": true,
+        "uncheckedReasons": [
+          "Gemini API project access is currently restricted (403 Permission Denied). The audit engine automatically ran local deterministic & heuristic verification."
+        ],
+        "formulaExplanation": "Potential penalty (22) / Maximum penalty (37) = 0.595. Score: 100 × (1 - 0.595) = 41%",
+        "ruleOutcomes": [
+          {
+            "ruleId": "rule-sol-100uv",
+            "ruleDescription": "Do not claim 100% protection from every harmful UV ray",
+            "severity": "critical",
+            "outcome": "violation"
+          },
+          {
+            "ruleId": "rule-sol-cancer",
+            "ruleDescription": "Do not claim the product prevents skin cancer without qualified authorization",
+            "severity": "critical",
+            "outcome": "pass"
+          },
+          {
+            "ruleId": "rule-sol-pigment",
+            "ruleDescription": "Do not claim permanent pigmentation removal or permanent erasure of sun damage",
+            "severity": "major",
+            "outcome": "violation"
+          },
+          {
+            "ruleId": "rule-sol-disclaimer",
+            "ruleDescription": "Mandatory disclaimer: Apply generously 15 minutes before sun exposure",
+            "severity": "major",
+            "outcome": "pass"
+          },
+          {
+            "ruleId": "rule-sol-naming",
+            "ruleDescription": "Enforce correct capitalization of \"Solaria Dermacare\" or \"Solaria\"",
+            "severity": "minor",
+            "outcome": "violation"
+          },
+          {
+            "ruleId": "rule-sol-bgcolor",
+            "ruleDescription": "Prohibit pitch-black and pure red background colors in artwork",
+            "severity": "major",
+            "outcome": "pass"
+          }
+        ]
+      },
+      "releaseRecommendation": {
+        "recommendedStatus": "changes_required",
+        "blockingReasons": [
+          "1 unresolved critical violation(s) block publication: \"100% protection from every har\""
+        ],
+        "allowsRelease": false,
+        "requiresReviewReasons": [
+          "3 open major compliance issue(s) require executive sign-off under brand policy.",
+          "Audit was completed in provisional mode (deterministic checks only). Manual compliance review recommended."
+        ]
+      },
+      "aiRequestFailed": true,
+      "aiFailureReason": "Gemini API project access is currently restricted (403 Permission Denied). The audit engine automatically ran local deterministic & heuristic verification."
+    },
+    {
+      "id": "audit-1793326016470",
+      "brandId": "brand-solaria-demo",
+      "campaignId": "camp-solaria-summer-2026",
+      "draftVersion": 1,
+      "draftHash": "hash-demo-v1",
+      "activeGuidelineIds": [
+        "doc-solaria-guide-1"
+      ],
+      "applicableRuleIds": [
+        "rule-sol-100uv",
+        "rule-sol-cancer",
+        "rule-sol-pigment",
+        "rule-sol-disclaimer",
+        "rule-sol-naming",
+        "rule-sol-bgcolor"
+      ],
+      "timestamp": "2026-10-30T02:06:56.470Z",
+      "engineVersion": "2.4.0-hybrid",
+      "deterministicFindings": [
+        {
+          "id": "det-rule-sol-100uv-104",
+          "ruleId": "rule-sol-100uv",
+          "ruleCategory": "prohibited_claims",
+          "ruleDescription": "Do not claim 100% protection from every harmful UV ray",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 1.1",
+          "sourceExcerpt": "Rule 1.1: Do not claim \"100% protection from every harmful UV ray\". No sun protection formula provides 100% ray blockage.",
+          "quotedText": "100% protection from every harmful UV ray",
+          "location": {
+            "startChar": 104,
+            "endChar": 145
+          },
+          "severity": "critical",
+          "explanation": "Explicit prohibited statement found: \"100% protection from every harmful UV ray\". Guideline prohibits this claim.",
+          "evidence": "Rule 1.1: Do not claim \"100% protection from every harmful UV ray\". No sun protection formula provides 100% ray blockage.",
+          "suggestedCorrection": "Broad-spectrum SPF 50+ barrier defense against UVA and UVB rays",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        },
+        {
+          "id": "det-rule-sol-pigment-272",
+          "ruleId": "rule-sol-pigment",
+          "ruleCategory": "unsupported_factual_claims",
+          "ruleDescription": "Do not claim permanent pigmentation removal or permanent erasure of sun damage",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 2.1",
+          "sourceExcerpt": "Rule 2.1: Do not claim \"permanent pigmentation removal\" or \"erases sun damage forever\". Clinical evidence supports dark spot fading, not permanent genetic eradication.",
+          "quotedText": "permanent pigmentation removal",
+          "location": {
+            "startChar": 272,
+            "endChar": 302
+          },
+          "severity": "major",
+          "explanation": "Explicit prohibited statement found: \"permanent pigmentation removal\". Guideline prohibits this claim.",
+          "evidence": "Rule 2.1: Do not claim \"permanent pigmentation removal\" or \"erases sun damage forever\". Clinical evidence supports dark spot fading, not permanent genetic eradication.",
+          "suggestedCorrection": "visibly diminishes the appearance of sun-induced dark spots over 8 weeks",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        },
+        {
+          "id": "det-rule-sol-naming-46",
+          "ruleId": "rule-sol-naming",
+          "ruleCategory": "brand_spelling_naming",
+          "ruleDescription": "Enforce correct capitalization of \"Solaria Dermacare\" or \"Solaria\"",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 3.1",
+          "sourceExcerpt": "Rule 3.1: The brand name must always be capitalized as \"Solaria Dermacare\" or \"Solaria\". Do not use lowercase \"solaria\" or alternate spellings like \"Solaris\".",
+          "quotedText": "solaria",
+          "location": {
+            "startChar": 46,
+            "endChar": 53
+          },
+          "severity": "minor",
+          "explanation": "Brand name capitalization or spelling mismatch: \"solaria\". Approved brand name is \"Solaria\".",
+          "evidence": "Rule 3.1: The brand name must always be capitalized as \"Solaria Dermacare\" or \"Solaria\". Do not use lowercase \"solaria\" or alternate spellings like \"Solaris\".",
+          "suggestedCorrection": "Solaria",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        }
+      ],
+      "semanticFindings": [
+        {
+          "id": "sem-fallback-rule-sol-100uv-104",
+          "ruleId": "rule-sol-100uv",
+          "ruleCategory": "prohibited_claims",
+          "ruleDescription": "Do not claim 100% protection from every harmful UV ray",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 1.1",
+          "sourceExcerpt": "Rule 1.1: Do not claim \"100% protection from every harmful UV ray\". No sun protection formula provides 100% ray blockage.",
+          "quotedText": "100% protection from every harmful UV ray",
+          "location": {
+            "startChar": 104,
+            "endChar": 145
+          },
+          "severity": "critical",
+          "explanation": "Contextual claim flagged: \"100% protection from every harmful UV ray\". Guideline requires qualified authorization.",
+          "evidence": "Rule 1.1: Do not claim \"100% protection from every harmful UV ray\". No sun protection formula provides 100% ray blockage.",
+          "suggestedCorrection": "Broad-spectrum SPF 50+ barrier defense against UVA and UVB rays",
+          "confidence": "high",
+          "detectionMethod": "semantic",
+          "resolutionStatus": "open"
+        },
+        {
+          "id": "sem-fallback-rule-sol-pigment-272",
+          "ruleId": "rule-sol-pigment",
+          "ruleCategory": "unsupported_factual_claims",
+          "ruleDescription": "Do not claim permanent pigmentation removal or permanent erasure of sun damage",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 2.1",
+          "sourceExcerpt": "Rule 2.1: Do not claim \"permanent pigmentation removal\" or \"erases sun damage forever\". Clinical evidence supports dark spot fading, not permanent genetic eradication.",
+          "quotedText": "permanent pigmentation removal",
+          "location": {
+            "startChar": 272,
+            "endChar": 302
+          },
+          "severity": "major",
+          "explanation": "Contextual claim flagged: \"permanent pigmentation removal\". Guideline requires qualified authorization.",
+          "evidence": "Rule 2.1: Do not claim \"permanent pigmentation removal\" or \"erases sun damage forever\". Clinical evidence supports dark spot fading, not permanent genetic eradication.",
+          "suggestedCorrection": "visibly diminishes the appearance of sun-induced dark spots over 8 weeks",
+          "confidence": "high",
+          "detectionMethod": "semantic",
+          "resolutionStatus": "open"
+        }
+      ],
+      "visualFindings": [],
+      "validatedFindings": [
+        {
+          "id": "det-rule-sol-100uv-104",
+          "ruleId": "rule-sol-100uv",
+          "ruleCategory": "prohibited_claims",
+          "ruleDescription": "Do not claim 100% protection from every harmful UV ray",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 1.1",
+          "sourceExcerpt": "Rule 1.1: Do not claim \"100% protection from every harmful UV ray\". No sun protection formula provides 100% ray blockage.",
+          "quotedText": "100% protection from every harmful UV ray",
+          "location": {
+            "startChar": 104,
+            "endChar": 145
+          },
+          "severity": "critical",
+          "explanation": "Explicit prohibited statement found: \"100% protection from every harmful UV ray\". Guideline prohibits this claim.",
+          "evidence": "Rule 1.1: Do not claim \"100% protection from every harmful UV ray\". No sun protection formula provides 100% ray blockage.",
+          "suggestedCorrection": "Broad-spectrum SPF 50+ barrier defense against UVA and UVB rays",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        },
+        {
+          "id": "det-rule-sol-pigment-272",
+          "ruleId": "rule-sol-pigment",
+          "ruleCategory": "unsupported_factual_claims",
+          "ruleDescription": "Do not claim permanent pigmentation removal or permanent erasure of sun damage",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 2.1",
+          "sourceExcerpt": "Rule 2.1: Do not claim \"permanent pigmentation removal\" or \"erases sun damage forever\". Clinical evidence supports dark spot fading, not permanent genetic eradication.",
+          "quotedText": "permanent pigmentation removal",
+          "location": {
+            "startChar": 272,
+            "endChar": 302
+          },
+          "severity": "major",
+          "explanation": "Explicit prohibited statement found: \"permanent pigmentation removal\". Guideline prohibits this claim.",
+          "evidence": "Rule 2.1: Do not claim \"permanent pigmentation removal\" or \"erases sun damage forever\". Clinical evidence supports dark spot fading, not permanent genetic eradication.",
+          "suggestedCorrection": "visibly diminishes the appearance of sun-induced dark spots over 8 weeks",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        },
+        {
+          "id": "det-rule-sol-naming-46",
+          "ruleId": "rule-sol-naming",
+          "ruleCategory": "brand_spelling_naming",
+          "ruleDescription": "Enforce correct capitalization of \"Solaria Dermacare\" or \"Solaria\"",
+          "sourceDocId": "doc-solaria-guide-1",
+          "sourceDocTitle": "Solaria Brand Governance Guidelines v1.4",
+          "pageOrSection": "Section 3.1",
+          "sourceExcerpt": "Rule 3.1: The brand name must always be capitalized as \"Solaria Dermacare\" or \"Solaria\". Do not use lowercase \"solaria\" or alternate spellings like \"Solaris\".",
+          "quotedText": "solaria",
+          "location": {
+            "startChar": 46,
+            "endChar": 53
+          },
+          "severity": "minor",
+          "explanation": "Brand name capitalization or spelling mismatch: \"solaria\". Approved brand name is \"Solaria\".",
+          "evidence": "Rule 3.1: The brand name must always be capitalized as \"Solaria Dermacare\" or \"Solaria\". Do not use lowercase \"solaria\" or alternate spellings like \"Solaris\".",
+          "suggestedCorrection": "Solaria",
+          "confidence": "high",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "open"
+        }
+      ],
+      "quarantinedFindings": [
+        {
+          "id": "finding-unsupported-guarantees-permanent-261",
+          "ruleId": "claim-substantiation-required",
+          "ruleCategory": "unsupported_factual_claims",
+          "ruleDescription": "Unsubstantiated Marketing Claim: \"guarantees permanent\" requires proof in Claim Registry",
+          "sourceDocId": "claim-policy",
+          "sourceDocTitle": "Solaria Dermacare Factual Claims Policy",
+          "pageOrSection": "Claims Substantiation Guidelines",
+          "sourceExcerpt": "All clinical, scientific, or absolute performance claims must be entered into the Claim Registry with accredited evidence before public release.",
+          "quotedText": "guarantees permanent",
+          "location": {
+            "startChar": 261,
+            "endChar": 281
+          },
+          "severity": "major",
+          "explanation": "The assertion \"guarantees permanent\" appears in the draft but is not substantiated by any approved entry in the Solaria Dermacare Claim Registry.",
+          "evidence": "Mandatory claim substantiation standard.",
+          "suggestedCorrection": "Register authorized clinical trial dossier in the Claim Registry or soften copy.",
+          "confidence": "insufficient_evidence",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "quarantined",
+          "validationIssues": [
+            "Rule with ID \"claim-substantiation-required\" does not exist in active guidelines."
+          ]
+        },
+        {
+          "id": "finding-unsupported-100%-guarantee/protection-104",
+          "ruleId": "claim-substantiation-required",
+          "ruleCategory": "unsupported_factual_claims",
+          "ruleDescription": "Unsubstantiated Marketing Claim: \"100% protection\" requires proof in Claim Registry",
+          "sourceDocId": "claim-policy",
+          "sourceDocTitle": "Solaria Dermacare Factual Claims Policy",
+          "pageOrSection": "Claims Substantiation Guidelines",
+          "sourceExcerpt": "All clinical, scientific, or absolute performance claims must be entered into the Claim Registry with accredited evidence before public release.",
+          "quotedText": "100% protection",
+          "location": {
+            "startChar": 104,
+            "endChar": 119
+          },
+          "severity": "major",
+          "explanation": "The assertion \"100% protection\" appears in the draft but is not substantiated by any approved entry in the Solaria Dermacare Claim Registry.",
+          "evidence": "Mandatory claim substantiation standard.",
+          "suggestedCorrection": "Register authorized clinical trial dossier in the Claim Registry or soften copy.",
+          "confidence": "insufficient_evidence",
+          "detectionMethod": "deterministic",
+          "resolutionStatus": "quarantined",
+          "validationIssues": [
+            "Rule with ID \"claim-substantiation-required\" does not exist in active guidelines."
+          ]
+        }
+      ],
+      "scoreCalculation": {
+        "criticalCount": 1,
+        "majorCount": 1,
+        "minorCount": 1,
+        "criticalWeight": 10,
+        "majorWeight": 5,
+        "minorWeight": 2,
+        "potentialPenalty": 17,
+        "maxPenalty": 37,
+        "complianceScore": 54,
+        "isProvisional": true,
+        "uncheckedReasons": [
+          "Gemini API project access is currently restricted (403 Permission Denied). The audit engine automatically ran local deterministic & heuristic verification."
+        ],
+        "formulaExplanation": "Potential penalty (17) / Maximum penalty (37) = 0.459. Score: 100 × (1 - 0.459) = 54%",
+        "ruleOutcomes": [
+          {
+            "ruleId": "rule-sol-100uv",
+            "ruleDescription": "Do not claim 100% protection from every harmful UV ray",
+            "severity": "critical",
+            "outcome": "violation"
+          },
+          {
+            "ruleId": "rule-sol-cancer",
+            "ruleDescription": "Do not claim the product prevents skin cancer without qualified authorization",
+            "severity": "critical",
+            "outcome": "pass"
+          },
+          {
+            "ruleId": "rule-sol-pigment",
+            "ruleDescription": "Do not claim permanent pigmentation removal or permanent erasure of sun damage",
+            "severity": "major",
+            "outcome": "violation"
+          },
+          {
+            "ruleId": "rule-sol-disclaimer",
+            "ruleDescription": "Mandatory disclaimer: Apply generously 15 minutes before sun exposure",
+            "severity": "major",
+            "outcome": "pass"
+          },
+          {
+            "ruleId": "rule-sol-naming",
+            "ruleDescription": "Enforce correct capitalization of \"Solaria Dermacare\" or \"Solaria\"",
+            "severity": "minor",
+            "outcome": "violation"
+          },
+          {
+            "ruleId": "rule-sol-bgcolor",
+            "ruleDescription": "Prohibit pitch-black and pure red background colors in artwork",
+            "severity": "major",
+            "outcome": "pass"
+          }
+        ]
+      },
+      "releaseRecommendation": {
+        "recommendedStatus": "changes_required",
+        "blockingReasons": [
+          "1 unresolved critical violation(s) block publication: \"100% protection from every har\""
+        ],
+        "allowsRelease": false,
+        "requiresReviewReasons": [
+          "1 open major compliance issue(s) require executive sign-off under brand policy.",
+          "2 candidate finding(s) require human review due to evidence or source discrepancies.",
+          "Audit was completed in provisional mode (deterministic checks only). Manual compliance review recommended."
+        ]
+      },
+      "aiRequestFailed": true,
+      "aiFailureReason": "Gemini API project access is currently restricted (403 Permission Denied). The audit engine automatically ran local deterministic & heuristic verification."
+    },
     {
       "id": "audit-1792895640174",
       "brandId": "brand-solaria-demo",
@@ -1194,5 +1854,105 @@
       "aiFailureReason": "{\"error\":{\"code\":403,\"message\":\"Your project has been denied access. Please contact support.\",\"status\":\"PERMISSION_DENIED\"}}"
     }
   ],
-  "approvals": []
+  "approvals": [],
+  "claims": [
+    {
+      "id": "claim-sol-1",
+      "brandId": "brand-solaria-demo",
+      "claimText": "Broad-spectrum SPF 50+ barrier defense against UVA and UVB rays",
+      "category": "clinical",
+      "sourceEvidence": "Clinical In-Vitro Photoprotection Study #SOL-2025-08; FDA 21 CFR 352 Compliance Dossier.",
+      "evidenceUrl": "https://solaria-dermacare.example.com/clinical/sol-2025-08.pdf",
+      "status": "approved",
+      "reviewerName": "Dr. Elena Vance",
+      "reviewerRole": "Lead Dermatologist",
+      "reviewedAt": "2026-01-15T10:00:00.000Z",
+      "expiryDate": "2027-12-31",
+      "tags": [
+        "SPF 50+",
+        "broad-spectrum",
+        "clinical",
+        "UVB"
+      ],
+      "usageNotes": "Approved for digital ads, packaging, and social media with mandatory 15-minute disclaimer.",
+      "createdAt": "2026-01-15T10:00:00.000Z",
+      "updatedAt": "2026-01-15T10:00:00.000Z"
+    },
+    {
+      "id": "claim-sol-2",
+      "brandId": "brand-solaria-demo",
+      "claimText": "Water-resistant up to 80 minutes",
+      "category": "efficacy",
+      "sourceEvidence": "Independent Laboratory Immersion Assay ISO 24444 (Report #WT-80-2025).",
+      "status": "approved",
+      "reviewerName": "Marcus Chen",
+      "reviewerRole": "Compliance Officer",
+      "reviewedAt": "2026-02-10T14:30:00.000Z",
+      "expiryDate": "2027-08-30",
+      "tags": [
+        "water-resistance",
+        "active-wear"
+      ],
+      "usageNotes": "Must always be paired with reapplication advisory: \"reapply after 80 minutes of swimming or sweating\".",
+      "createdAt": "2026-02-10T14:30:00.000Z",
+      "updatedAt": "2026-02-10T14:30:00.000Z"
+    },
+    {
+      "id": "claim-sol-3",
+      "brandId": "brand-solaria-demo",
+      "claimText": "All-day 24-hour hydration lock without reapplication",
+      "category": "efficacy",
+      "sourceEvidence": "Internal Pilot Moisture Sensor Test 2024 (Expired Certificate).",
+      "status": "expired",
+      "reviewerName": "Marcus Chen",
+      "reviewerRole": "Compliance Officer",
+      "reviewedAt": "2024-06-01T09:00:00.000Z",
+      "expiryDate": "2025-06-01",
+      "tags": [
+        "hydration",
+        "expired-claim"
+      ],
+      "usageNotes": "EXPIRED: Do not use in active campaigns. Requires new 2026 corneometry trial before reactivation.",
+      "createdAt": "2024-06-01T09:00:00.000Z",
+      "updatedAt": "2025-06-02T00:00:00.000Z"
+    },
+    {
+      "id": "claim-sol-4",
+      "brandId": "brand-solaria-demo",
+      "claimText": "Permanently erases hyperpigmentation and sun damage",
+      "category": "clinical",
+      "sourceEvidence": "Unverified testimonial submissions without randomized double-blind clinical validation.",
+      "status": "rejected",
+      "reviewerName": "Dr. Elena Vance",
+      "reviewerRole": "Lead Dermatologist",
+      "reviewedAt": "2026-03-01T11:20:00.000Z",
+      "expiryDate": "2026-12-31",
+      "tags": [
+        "pigmentation",
+        "rejected"
+      ],
+      "usageNotes": "STRICTLY PROHIBITED: Misleading medical promise. Only gradual cosmetic fading may be claimed.",
+      "createdAt": "2026-03-01T11:20:00.000Z",
+      "updatedAt": "2026-03-01T11:20:00.000Z"
+    },
+    {
+      "id": "claim-sol-5",
+      "brandId": "brand-solaria-demo",
+      "claimText": "Micro-algae photolyase enzyme speeds natural cellular DNA repair by 40%",
+      "category": "ingredient",
+      "sourceEvidence": "Phase II In-Vitro Cellular Repair Assay pending final peer review sign-off.",
+      "status": "pending_review",
+      "reviewerName": "Pending Medical Board",
+      "reviewerRole": "Clinical Advisory Panel",
+      "expiryDate": "2027-01-01",
+      "tags": [
+        "enzymes",
+        "pending",
+        "cellular-repair"
+      ],
+      "usageNotes": "Under review. Not authorized for consumer-facing release until final peer review.",
+      "createdAt": "2026-10-10T16:00:00.000Z",
+      "updatedAt": "2026-10-10T16:00:00.000Z"
+    }
+  ]
 }

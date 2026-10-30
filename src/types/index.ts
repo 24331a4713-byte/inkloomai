@@ -93,6 +93,35 @@ export interface BrandRule {
   createdAt: string;
 }
 
+export type ClaimStatus = 'approved' | 'pending_review' | 'rejected' | 'expired';
+
+export interface Claim {
+  id: string;
+  brandId: string;
+  claimText: string;
+  category: 'clinical' | 'efficacy' | 'environmental' | 'safety' | 'ingredient' | 'comparative' | 'general';
+  sourceEvidence: string;
+  evidenceUrl?: string;
+  status: ClaimStatus;
+  reviewerName?: string;
+  reviewerRole?: string;
+  reviewedAt?: string;
+  expiryDate: string; // ISO date string (YYYY-MM-DD or ISO 8601)
+  tags: string[];
+  usageNotes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ClaimCheckResult {
+  claim: Claim;
+  matchType: 'exact' | 'partial';
+  matchedSnippet: string;
+  isCompliant: boolean;
+  issue?: 'expired' | 'unapproved' | 'rejected' | 'pending_review';
+  finding?: Finding;
+}
+
 export type CampaignStatus =
   | 'draft'
   | 'auditing'

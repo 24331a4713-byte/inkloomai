@@ -19,10 +19,14 @@ import {
   Edit2,
   X,
   FileUp,
+  ImagePlus,
+  Palette,
+  Maximize2,
 } from 'lucide-react';
 import { Campaign, Brand, DraftRevision, AuditRun, Finding, BrandRule } from '../types';
 import { NavPage } from './Navigation';
 import { useToast } from './Toast';
+import { analyzeImageFile, ImageAnalysisResult } from '../utils/imageAnalyzer';
 
 interface ContentEditorViewProps {
   campaign: Campaign | null;
@@ -30,7 +34,7 @@ interface ContentEditorViewProps {
   rules: BrandRule[];
   latestAudit: AuditRun | null;
   onSaveDraft: (content: string) => Promise<void>;
-  onRunAudit: () => Promise<void>;
+  onRunAudit: (visualAssetMeta?: any) => Promise<void>;
   onApplyCorrection: (finding: Finding, replacementText: string) => Promise<void>;
   onDismissFinding: (findingId: string, reason: string) => void;
   isAuditing: boolean;
@@ -60,6 +64,10 @@ export const ContentEditorView: React.FC<ContentEditorViewProps> = ({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showRevisions, setShowRevisions] = useState(false);
   const [visualAssetUrl, setVisualAssetUrl] = useState<string | null>(null);
+  const [visualAssetMeta, setVisualAssetMeta] = useState<ImageAnalysisResult | null>(null);
+  const [isAnalyzingImage, setIsAnalyzingImage] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
   const [activeRightTab, setActiveRightTab] = useState<'assistant' | 'inspector'>('inspector');
   const [selectedFindingId, setSelectedFindingId] = useState<string | null>(null);
 
@@ -189,13 +197,50 @@ export const ContentEditorView: React.FC<ContentEditorViewProps> = ({
     }
   };
 
-  // Drag and drop text files into editor
+  // Process and extract image dimensions and dominant colors
+  const handleProcessImageFile = async (file: File) => {
+    setIsAnalyzingImage(true);
+    try {
+      const analysis = await analyzeImageFile(file);
+      setVisualAssetMeta(analysis);
+      setVisualAssetUrl(analysis.dataUrl);
+
+      // Check if any extracted dominant colors are prohibited
+      const prohibited = brand?.visualPalette?.prohibitedBackgrounds || [];
+      const hasProhibited = analysis.dominantColors.some((c) =>
+        prohibited.some((p) => p.toLowerCase() === c.toLowerCase())
+      );
+
+      if (hasProhibited) {
+        warning(
+          'Visual Warning',
+          `Artwork contains prohibited brand background color. Guideline violation will be flagged.`
+        );
+      } else {
+        success(
+          'Artwork Analyzed',
+          `Extracted ${analysis.width}×${analysis.height} (${analysis.aspectRatio}), ${analysis.dominantColors.length} dominant colors.`
+        );
+      }
+    } catch (err: any) {
+      error('Image Analysis Failed', err.message);
+    } finally {
+      setIsAnalyzingImage(false);
+    }
+  };
+
+  // Drag and drop text or image files into editor
   const handleDropFile = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingOver(false);
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       const file = files[0];
+      if (file.type.startsWith('image/')) {
+        handleProcessImageFile(file);
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (event) => {
         const text = event.target?.result as string;
@@ -208,6 +253,28 @@ export const ContentEditorView: React.FC<ContentEditorViewProps> = ({
       };
       reader.readAsText(file);
     }
+  };
+
+  const handleRunAuditClick = async () => {
+    // Validate empty draft
+    if (!draft.trim() && !visualAssetMeta && !campaign?.visualAssetUrl) {
+      warning('Draft is Empty', 'Please write or paste marketing draft copy or upload a creative image before auditing.');
+      return;
+    }
+
+    const visualPayload = visualAssetMeta
+      ? {
+          fileName: visualAssetMeta.fileName,
+          width: visualAssetMeta.width,
+          height: visualAssetMeta.height,
+          aspectRatio: visualAssetMeta.aspectRatio,
+          dominantColors: visualAssetMeta.dominantColors,
+          backgroundColor: visualAssetMeta.backgroundColor,
+          hasLogo: visualAssetMeta.hasLogo,
+        }
+      : undefined;
+
+    await onRunAudit(visualPayload);
   };
 
   // Live Assistant Chat
@@ -306,7 +373,7 @@ export const ContentEditorView: React.FC<ContentEditorViewProps> = ({
           </button>
 
           <button
-            onClick={onRunAudit}
+            onClick={handleRunAuditClick}
             disabled={isAuditing}
             className="flex items-center gap-2 px-4 py-1.5 bg-[#4338CA] hover:bg-[#3730A3] disabled:opacity-50 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer"
           >
@@ -333,18 +400,31 @@ export const ContentEditorView: React.FC<ContentEditorViewProps> = ({
             <span>Draft was edited. Existing audit results are outdated. Re-run audit before sign-off.</span>
           </div>
           <button
-            onClick={onRunAudit}
+            onClick={handleRunAuditClick}
             disabled={isAuditing}
-            className="px-2.5 py-1 text-xs font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded transition-colors shrink-0"
+            className="px-2.5 py-1 text-xs font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded transition-colors shrink-0 cursor-pointer"
           >
             Re-run Audit
           </button>
         </div>
       )}
 
+      {/* Hidden Image Input */}
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0]) {
+            handleProcessImageFile(e.target.files[0]);
+          }
+        }}
+      />
+
       {/* Two-Panel Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* LEFT PANEL: CONTENT EDITOR (7 cols) */}
+        {/* LEFT PANEL: CONTENT EDITOR & VISUAL INSPECTOR (7 cols) */}
         <div className="lg:col-span-7 space-y-3">
           <div
             onDragOver={(e) => {
@@ -386,9 +466,18 @@ export const ContentEditorView: React.FC<ContentEditorViewProps> = ({
               </div>
 
               <div className="flex items-center gap-3 font-mono tabular-nums text-[11px]">
+                <button
+                  onClick={() => imageInputRef.current?.click()}
+                  className="flex items-center gap-1 text-indigo-700 hover:text-indigo-900 font-semibold cursor-pointer"
+                  title="Upload creative image for visual brand audit"
+                >
+                  <ImagePlus className="w-3.5 h-3.5" />
+                  <span>{visualAssetMeta ? 'Replace Image' : 'Attach Image'}</span>
+                </button>
+                <span>·</span>
                 <span>{wordsCount} words</span>
                 <span>·</span>
-                <span>{charsCount} characters</span>
+                <span>{charsCount} chars</span>
               </div>
             </div>
 
@@ -397,24 +486,131 @@ export const ContentEditorView: React.FC<ContentEditorViewProps> = ({
               <textarea
                 value={draft}
                 onChange={handleTextChange}
-                placeholder="Write, paste, or drag & drop marketing copy here..."
-                rows={16}
-                className="w-full p-4 text-sm font-mono leading-relaxed text-stone-900 focus:outline-none resize-y min-h-[360px] bg-transparent"
+                placeholder="Write, paste, or drag & drop marketing copy or images here..."
+                rows={14}
+                className="w-full p-4 text-sm font-mono leading-relaxed text-stone-900 focus:outline-none resize-y min-h-[300px] bg-transparent"
               />
               {isDraggingOver && (
                 <div className="absolute inset-0 bg-indigo-50/90 backdrop-blur-2xs flex flex-col items-center justify-center text-indigo-700 pointer-events-none">
                   <FileUp className="w-8 h-8 animate-bounce mb-2" />
-                  <span className="font-bold text-sm">Drop document to import copy</span>
+                  <span className="font-bold text-sm">Drop document or image here</span>
                 </div>
               )}
             </div>
 
             {/* Bottom Status */}
             <div className="px-4 py-2 border-t border-stone-100 bg-stone-50/50 flex items-center justify-between text-[11px] text-stone-400">
-              <span>Supports direct typing, copy-pasting, or dropping .txt / .md files</span>
+              <span>Supports text files (.txt, .md) and creative artwork (.png, .jpg, .webp)</span>
               <span>Shortcuts: Ctrl+S (Save), Ctrl+Z (Undo)</span>
             </div>
           </div>
+
+          {/* VISUAL ASSET INSPECTOR CARD (When Image is Attached) */}
+          {visualAssetMeta && (
+            <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Palette className="w-4 h-4 text-indigo-600" />
+                  <span className="text-xs font-bold text-stone-900">
+                    Visual Brand Inspector: {visualAssetMeta.fileName}
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    setVisualAssetMeta(null);
+                    setVisualAssetUrl(null);
+                    success('Image Removed', 'Removed creative asset from draft.');
+                  }}
+                  className="text-stone-400 hover:text-red-700 text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  <span>Remove</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                {/* Thumbnail Preview */}
+                <div className="md:col-span-3">
+                  <img
+                    src={visualAssetMeta.dataUrl}
+                    alt="Creative Preview"
+                    className="w-full h-24 object-cover rounded-lg border border-stone-200 shadow-2xs"
+                  />
+                </div>
+
+                {/* Extracted Metrics */}
+                <div className="md:col-span-9 grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                  <div className="bg-stone-50 p-2.5 rounded-lg border border-stone-100 space-y-0.5">
+                    <span className="text-[10px] text-stone-400 uppercase font-bold tracking-wider block">
+                      Dimensions
+                    </span>
+                    <span className="font-mono font-bold text-stone-800">
+                      {visualAssetMeta.width} × {visualAssetMeta.height} px
+                    </span>
+                  </div>
+
+                  <div className="bg-stone-50 p-2.5 rounded-lg border border-stone-100 space-y-0.5">
+                    <span className="text-[10px] text-stone-400 uppercase font-bold tracking-wider block">
+                      Aspect Ratio
+                    </span>
+                    <span className="font-mono font-bold text-indigo-700">
+                      {visualAssetMeta.aspectRatio}
+                    </span>
+                  </div>
+
+                  <div className="bg-stone-50 p-2.5 rounded-lg border border-stone-100 space-y-0.5">
+                    <span className="text-[10px] text-stone-400 uppercase font-bold tracking-wider block">
+                      Background Color
+                    </span>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span
+                        className="w-3.5 h-3.5 rounded border border-stone-300 shrink-0"
+                        style={{ backgroundColor: visualAssetMeta.backgroundColor }}
+                      />
+                      <span className="font-mono text-[11px] font-semibold text-stone-700">
+                        {visualAssetMeta.backgroundColor}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dominant Palette Swatches */}
+              <div className="pt-2 border-t border-stone-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-semibold text-stone-600">Extracted Dominant Palette:</span>
+                  <div className="flex items-center gap-1.5">
+                    {visualAssetMeta.dominantColors.map((color, idx) => {
+                      const isProhibited = (brand?.visualPalette?.prohibitedBackgrounds || []).some(
+                        (p) => p.toLowerCase() === color.toLowerCase()
+                      );
+                      return (
+                        <div
+                          key={idx}
+                          className={`flex items-center gap-1 px-1.5 py-0.5 rounded border text-[10px] font-mono ${
+                            isProhibited
+                              ? 'bg-red-50 border-red-300 text-red-800 font-bold'
+                              : 'bg-stone-50 border-stone-200 text-stone-700'
+                          }`}
+                        >
+                          <span
+                            className="w-2.5 h-2.5 rounded-xs shrink-0 border border-black/10"
+                            style={{ backgroundColor: color }}
+                          />
+                          <span>{color}</span>
+                          {isProhibited && <span className="text-red-600 ml-0.5">⚠</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <span className="text-[10px] text-stone-400">
+                  Extracted via client-side canvas quantization
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Quick Violations Jump Bar */}
           {latestAudit && latestAudit.validatedFindings.length > 0 && (

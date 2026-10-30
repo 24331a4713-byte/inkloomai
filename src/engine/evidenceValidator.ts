@@ -28,11 +28,12 @@ export function validateAndDeduplicateFindings(
   for (const finding of rawFindings) {
     const issues: string[] = [];
 
-    // 1. Verify cited rule exists in activeBrandRules
+    // 1. Verify cited rule exists in activeBrandRules (or in Claim Registry)
+    const isClaimFinding = finding.ruleId.startsWith('claim-');
     const rule = ruleMap.get(finding.ruleId);
-    if (!rule) {
+    if (!rule && !isClaimFinding) {
       issues.push(`Rule with ID "${finding.ruleId}" does not exist in active guidelines.`);
-    } else {
+    } else if (rule) {
       // 2. Strict Brand Isolation: Rule must belong to the current brand
       if (rule.brandId !== selectedBrand.id) {
         issues.push(
@@ -49,14 +50,15 @@ export function validateAndDeduplicateFindings(
       }
     }
 
-    // 4. Verify quoted text occurs in submitted draft (unless it's a missing disclaimer indicator)
+    // 4. Verify quoted text occurs in submitted draft (unless it's a missing disclaimer or visual finding)
     const isMissingDisclaimer =
       finding.ruleCategory === 'required_disclaimers' &&
       finding.quotedText.startsWith('[Missing required');
+    const isVisualFinding = finding.detectionMethod === 'visual';
 
     let resolvedLocation = finding.location;
 
-    if (!isMissingDisclaimer) {
+    if (!isMissingDisclaimer && !isVisualFinding) {
       const draftIndex = submittedDraft.indexOf(finding.quotedText);
       if (draftIndex === -1) {
         // Try case-insensitive lookup
@@ -91,19 +93,26 @@ export function validateAndDeduplicateFindings(
       });
     } else {
       // Attach verified rule fields for complete traceability
-      const verifiedRule = rule!;
-      validatedFindings.push({
-        ...finding,
-        location: resolvedLocation,
-        ruleCategory: verifiedRule.category,
-        ruleDescription: verifiedRule.ruleDescription,
-        sourceDocId: verifiedRule.sourceDocId,
-        sourceDocTitle: verifiedRule.sourceDocTitle,
-        pageOrSection: verifiedRule.pageOrSection,
-        sourceExcerpt: verifiedRule.sourceExcerpt,
-        evidence: verifiedRule.sourceExcerpt,
-        suggestedCorrection: finding.suggestedCorrection || verifiedRule.targetReplacement,
-      });
+      if (rule) {
+        validatedFindings.push({
+          ...finding,
+          location: resolvedLocation,
+          ruleCategory: rule.category,
+          ruleDescription: rule.ruleDescription,
+          sourceDocId: rule.sourceDocId,
+          sourceDocTitle: rule.sourceDocTitle,
+          pageOrSection: rule.pageOrSection,
+          sourceExcerpt: rule.sourceExcerpt,
+          evidence: rule.sourceExcerpt,
+          suggestedCorrection: finding.suggestedCorrection || rule.targetReplacement,
+        });
+      } else {
+        // Claim Registry or self-contained engine finding
+        validatedFindings.push({
+          ...finding,
+          location: resolvedLocation,
+        });
+      }
     }
   }
 
